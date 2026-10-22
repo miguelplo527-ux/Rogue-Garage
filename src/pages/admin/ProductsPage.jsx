@@ -4,6 +4,8 @@ import { useProducts } from '../../hooks/useProducts';
 import { productsService } from '../../services/productsService';
 import { storageService } from '../../services/storageService';
 import { formatMoney } from '../../utils/formatters';
+import { supabase } from '../../services/supabaseClient';
+
 
 function ProductForm({ onClose, onSuccess }) {
   const [form, setForm] = useState({ sku: '', name: '', description: '', cost_price: '', sale_price: '', stock: '' });
