@@ -9,10 +9,10 @@ export default function SalesPage() {
   const [cart, setCart] = useState([]); 
   const [search, setSearch] = useState(''); 
   const [paymentMethod, setPaymentMethod] = useState('efectivo');
+  const [customerName, setCustomerName] = useState(''); // <-- NUEVO
   const [history, setHistory] = useState([]); 
   const [loading, setLoading] = useState(false);
 
-  // Cargar historial de ventas
   const loadHistory = async () => { 
     const { data } = await supabase.from('sales').select('*').order('date', { ascending: false }).limit(5); 
     setHistory(data || []); 
@@ -20,13 +20,10 @@ export default function SalesPage() {
 
   useEffect(() => { loadHistory(); }, []);
 
-  // Filtrar productos por buscador
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase()));
   
-  // Agregar al carrito (si ya existe, suma cantidad)
   const addToCart = (p) => { 
     if (p.stock <= 0) return toast.error('Producto sin stock');
-    
     const existing = cart.find(item => item.id === p.id);
     if (existing) {
       if (existing.quantity >= p.stock) return toast.error('No hay más stock disponible');
@@ -38,16 +35,19 @@ export default function SalesPage() {
   };
   
   const remove = (id) => setCart(cart.filter(i => i.id !== id));
-  
   const total = cart.reduce((a, b) => a + (b.sale_price * b.quantity), 0);
 
-  // Procesar la venta
   const checkout = async () => {
     if (cart.length === 0) return toast.error('El carrito está vacío');
     setLoading(true);
     try {
-      // 1. Crear la venta
-      const { data: sale, error: saleError } = await supabase.from('sales').insert({ total, payment_method: paymentMethod, status: 'completada' }).select().single();
+      // 1. Crear la venta con nombre del cliente
+      const { data: sale, error: saleError } = await supabase.from('sales').insert({ 
+        total, 
+        payment_method: paymentMethod, 
+        customer_name: customerName || 'Cliente final', // <-- Nombre del cliente
+        status: 'completada' 
+      }).select().single();
       if (saleError) throw saleError;
       
       // 2. Guardar los items
@@ -60,8 +60,9 @@ export default function SalesPage() {
         await supabase.rpc('decrement_stock', { product_id: item.id, amount: item.quantity }); 
       }
       
-      toast.success('¡Venta registrada con éxito!'); 
+      toast.success('¡Venta registrada!'); 
       setCart([]); 
+      setCustomerName('');
       reload(); 
       loadHistory();
     } catch (e) { 
@@ -77,19 +78,12 @@ export default function SalesPage() {
       <div>
         <h1 style={{ color: '#fff', marginBottom: '1.5rem', fontSize: '2rem' }}>Punto de Venta</h1>
         
-        {/* Buscador */}
         <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-          <input 
-            type="text" 
-            placeholder="Buscar producto por nombre o SKU..." 
-            value={search} 
-            onChange={e => setSearch(e.target.value)} 
-            style={{ width: '100%', padding: '1rem', background: '#14171d', border: '1px solid #262b34', color: '#fff', borderRadius: '8px', outline: 'none' }} 
-          />
+          <input type="text" placeholder="Buscar producto por nombre o SKU..." value={search} onChange={e => setSearch(e.target.value)} style={{ width: '100%', padding: '1rem', background: '#14171d', border: '1px solid #262b34', color: '#fff', borderRadius: '8px', outline: 'none' }} />
           {search && (
             <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#1a1a1a', border: '1px solid #262b34', zIndex: 10, borderRadius: '0 0 8px 8px', maxHeight: '300px', overflowY: 'auto' }}>
               {filtered.map(p => (
-                <div key={p.id} onClick={() => addToCart(p)} style={{ padding: '1rem', borderBottom: '1px solid #222', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#222'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <div key={p.id} onClick={() => addToCart(p)} style={{ padding: '1rem', borderBottom: '1px solid #222', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }} onMouseEnter={e => e.currentTarget.style.background = '#222'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   <span style={{ color: '#fff' }}>{p.name} <small style={{color:'#888'}}>({p.stock} disp.)</small></span>
                   <span style={{ color: '#d99a3d', fontWeight: 'bold' }}>{formatMoney(p.sale_price)}</span>
                 </div>
@@ -99,7 +93,6 @@ export default function SalesPage() {
           )}
         </div>
         
-        {/* Tabla del Carrito */}
         <div style={{ background: '#14171d', borderRadius: '8px', border: '1px solid #262b34', overflow: 'hidden' }}>
           <table style={{ width: '100%', color: '#fff', borderCollapse: 'collapse' }}>
             <thead>
@@ -117,9 +110,7 @@ export default function SalesPage() {
                   <td style={{ padding: '1rem', color: '#9aa0ab' }}>{i.quantity}</td>
                   <td style={{ padding: '1rem', color: '#d99a3d', fontWeight: 'bold' }}>{formatMoney(i.sale_price * i.quantity)}</td>
                   <td style={{ padding: '1rem' }}>
-                    <button onClick={() => remove(i.id)} style={{ background: 'rgba(229,72,77,0.1)', border: 'none', color: '#e5484d', cursor: 'pointer', padding: '5px 10px', borderRadius: '4px', fontWeight: 'bold' }}>
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+                    <button onClick={() => remove(i.id)} style={{ background: 'rgba(229,72,77,0.1)', border: 'none', color: '#e5484d', cursor: 'pointer', padding: '5px 10px', borderRadius: '4px', fontWeight: 'bold' }}>X</button>
                   </td>
                 </tr>
               ))}
@@ -129,18 +120,30 @@ export default function SalesPage() {
         </div>
       </div>
 
-      {/* Panel de Resumen */}
       <div style={{ background: '#14171d', padding: '1.5rem', borderRadius: '8px', border: '1px solid #262b34', height: 'fit-content' }}>
         <h2 style={{ color: '#fff', marginTop: 0, borderBottom: '1px solid #262b34', paddingBottom: '1rem', fontSize: '1.2rem' }}>Resumen de Venta</h2>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '1.5rem 0', fontSize: '1.2rem' }}>
+        <div style={{ marginTop: '1rem' }}>
+          <input 
+            type="text" 
+            placeholder="Nombre del cliente (Opcional)" 
+            value={customerName} 
+            onChange={e => setCustomerName(e.target.value)}
+            style={{ width: '100%', padding: '0.8rem', background: '#000', border: '1px solid #333', color: '#fff', marginBottom: '1rem', borderRadius: '6px' }} 
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', margin: '1rem 0', fontSize: '1.2rem' }}>
           <span style={{ color: '#9aa0ab' }}>Total a Pagar:</span>
           <strong style={{ color: '#d99a3d', fontSize: '1.5rem' }}>{formatMoney(total)}</strong>
         </div>
         
         <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} style={{ width: '100%', padding: '1rem', background: '#000', border: '1px solid #262b34', color: '#fff', marginBottom: '1rem', borderRadius: '6px', outline: 'none' }}>
           <option value="efectivo">Efectivo</option>
-          <option value="transferencia">Transferencia / Nequi</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="nequi">Nequi</option>
+          <option value="daviplata">Daviplata</option>
+          <option value="bancolombia">Bancolombia</option>
           <option value="tarjeta">Tarjeta</option>
         </select>
         

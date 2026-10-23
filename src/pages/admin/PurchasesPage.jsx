@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { supabase } from '../../services/supabaseClient';
@@ -11,18 +11,40 @@ export default function PurchasesPage() {
   const [unitCost, setUnitCost] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Estados para Proveedores
+  const [suppliers, setSuppliers] = useState([]);
+  const [selectedSupplier, setSelectedSupplier] = useState('');
+
+  // Cargar proveedores al iniciar
+  useEffect(() => {
+    supabase.from('suppliers').select('*').order('name').then(({ data }) => setSuppliers(data || []));
+  }, []);
+
+  const addSupplier = async () => {
+    const name = window.prompt("Nombre del nuevo proveedor:");
+    if (name && name.trim()) {
+      const { data, error } = await supabase.from('suppliers').insert({ name: name.trim() }).select().single();
+      if (!error && data) {
+        setSuppliers([...suppliers, data]);
+        setSelectedSupplier(data.id);
+        toast.success('Proveedor agregado');
+      }
+    }
+  };
+
   const handlePurchase = async (e) => {
     e.preventDefault();
     if (!selectedProduct || !quantity || !unitCost) return toast.error('Llena todos los campos');
     
     setLoading(true);
     try {
-      // 1. Registrar la compra en la base de datos
+      // 1. Registrar la compra en la base de datos con el proveedor
       const { error: purchaseError } = await supabase.from('purchases').insert({
         product_id: selectedProduct,
         quantity: Number(quantity),
         unit_cost: Number(unitCost),
-        total: Number(quantity) * Number(unitCost)
+        total: Number(quantity) * Number(unitCost),
+        supplier_id: selectedSupplier || null // Guardamos el proveedor
       });
       if (purchaseError) throw purchaseError;
 
@@ -37,7 +59,7 @@ export default function PurchasesPage() {
       reload();
     } catch (error) {
       console.error(error);
-      toast.error('Error al registrar compra. Revisa la consola.');
+      toast.error('Error al registrar compra.');
     } finally {
       setLoading(false);
     }
@@ -54,6 +76,19 @@ export default function PurchasesPage() {
           <h2 style={{ color: '#fff', marginTop: 0, fontSize: '1.2rem', borderBottom: '1px solid #262b34', paddingBottom: '1rem' }}>Registrar Nueva Compra</h2>
           
           <form onSubmit={handlePurchase} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginTop: '1.5rem' }}>
+            
+            {/* SELECTOR DE PROVEEDOR */}
+            <div>
+              <label style={{ color: '#9aa0ab', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem' }}>Proveedor</label>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} style={{ flex: 1, padding: '1rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none' }}>
+                  <option value="">-- Seleccionar Proveedor --</option>
+                  {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+                <button type="button" onClick={addSupplier} style={{ padding: '0 1rem', background: '#262b34', color: '#fff', border: '1px solid #444', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>+ Nuevo</button>
+              </div>
+            </div>
+
             <div>
               <label style={{ color: '#9aa0ab', fontSize: '0.9rem', display: 'block', marginBottom: '0.5rem' }}>Selecciona el producto</label>
               <select value={selectedProduct} onChange={e => setSelectedProduct(e.target.value)} style={{ width: '100%', padding: '1rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none' }}>
