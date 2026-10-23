@@ -12,11 +12,11 @@ export default function Sidebar() {
     alignItems: 'center',
     gap: '10px',
     padding: '12px 15px', 
-    color: isActive ? '#d99a3d' : '#9aa0ab', 
+    color: isActive ? '#3b82f6' : '#9aa0ab', // <-- Azul en lugar de amarillo
     textDecoration: 'none', 
     borderRadius: '8px', 
     marginBottom: '8px', 
-    background: isActive ? 'rgba(217, 154, 61, 0.1)' : 'transparent',
+    background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent', // <-- Azul transparente
     fontWeight: isActive ? 'bold' : 'normal',
     transition: 'all 0.2s'
   });
@@ -24,7 +24,7 @@ export default function Sidebar() {
   return (
     <aside style={{ width: '260px', background: '#06070a', padding: '1.5rem', borderRight: '1px solid #262b34', display: 'flex', flexDirection: 'column' }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <h2 style={{ color: '#fff', margin: 0, fontSize: '1.2rem', letterSpacing: '1px' }}>ROGUE GARAGE</h2>
+        <img src="/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '40px', margin: '0 auto 10px auto', display: 'block' }} />
         <span style={{ display: 'inline-block', background: '#d99a3d', color: '#000', fontSize: '0.7rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px', marginTop: '5px' }}>ADMIN</span>
       </div>
       

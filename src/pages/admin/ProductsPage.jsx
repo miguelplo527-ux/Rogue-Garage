@@ -1,4 +1,4 @@
-﻿import { useState, useRef } from 'react';
+﻿import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { productsService } from '../../services/productsService';
@@ -7,23 +7,22 @@ import { formatMoney } from '../../utils/formatters';
 import { supabase } from '../../services/supabaseClient';
 
 function ProductForm({ onClose, onSuccess }) {
-  // Agregamos brand y category al estado
   const [form, setForm] = useState({ 
-    sku: '', 
-    name: '', 
-    description: '', 
-    cost_price: '', 
-    sale_price: '', 
-    stock: '',
-    brand: 'Genérico',
-    category: 'Repuestos'
+    sku: '', name: '', description: '', cost_price: '', sale_price: '', stock: '',
+    brand: 'Genérico', category: 'Repuestos', supplier_id: ''
   });
+  const [suppliers, setSuppliers] = useState([]);
   const [image_url, setImageUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef(null);
   
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  // Cargar los proveedores existentes
+  useEffect(() => {
+    supabase.from('suppliers').select('*').order('name').then(({ data }) => setSuppliers(data || []));
+  }, []);
 
   const handleImage = async (e) => {
     const file = e.target.files[0]; 
@@ -69,7 +68,8 @@ function ProductForm({ onClose, onSuccess }) {
         sale_price: Number(form.sale_price), 
         stock: Number(form.stock),
         category_id: catData?.id || null,
-        category: form.category
+        category: form.category,
+        supplier_id: form.supplier_id || null // Guardamos el proveedor por defecto
       }); 
       toast.success('Producto creado exitosamente'); 
       onSuccess(); 
@@ -90,7 +90,6 @@ function ProductForm({ onClose, onSuccess }) {
         <input placeholder="SKU (Ej: RE-YAM-001)" required onChange={e => update('sku', e.target.value)} style={inputStyle} />
         <input placeholder="Nombre del producto" required onChange={e => update('name', e.target.value)} style={inputStyle} />
         
-        {/* CAMPOS DE MARCA Y CATEGORÍA */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div>
             <label style={{ color: '#9aa0ab', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Marca</label>
@@ -112,6 +111,15 @@ function ProductForm({ onClose, onSuccess }) {
               <option value="Accesorios">Accesorios</option>
             </select>
           </div>
+        </div>
+
+        {/* SELECTOR DE PROVEEDOR POR DEFECTO */}
+        <div>
+          <label style={{ color: '#9aa0ab', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Proveedor Principal (Opcional)</label>
+          <select value={form.supplier_id} onChange={e => update('supplier_id', e.target.value)} style={inputStyle}>
+            <option value="">-- Sin proveedor asignado --</option>
+            {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -164,7 +172,6 @@ export default function ProductsPage() {
     catch { toast.error('Error al eliminar'); }
   };
 
-  // Nueva función para editar el stock
   const handleEditStock = async (product) => {
     const newStock = window.prompt(`Corregir stock de "${product.name}" (Actual: ${product.stock}):`, product.stock);
     if (newStock !== null && newStock !== '' && !isNaN(newStock)) {
@@ -201,26 +208,15 @@ export default function ProductsPage() {
             {loading ? <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center' }}>Cargando...</td></tr> : products.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid #222' }}>
                 <td style={{ padding: '1rem' }}>
-                  <img 
-                    src={p.image_url || defaultImage} 
-                    alt={p.name} 
-                    style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} 
-                    onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }}
-                  />
+                  <img src={p.image_url || defaultImage} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} onError={(e) => { e.target.onerror = null; e.target.src = defaultImage; }} />
                 </td>
                 <td style={{ color: '#3b82f6', fontFamily: 'monospace' }}>{p.sku}</td>
                 <td>{p.name}</td>
                 <td>{formatMoney(p.sale_price)}</td>
                 <td>
-                  {/* BOTÓN PARA EDITAR STOCK */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>{p.stock} unds</span>
-                    <button 
-                      onClick={() => handleEditStock(p)} 
-                      style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6', color: '#3b82f6', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}
-                    >
-                      Editar
-                    </button>
+                    <button onClick={() => handleEditStock(p)} style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6', color: '#3b82f6', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>Editar</button>
                   </div>
                 </td>
                 <td>

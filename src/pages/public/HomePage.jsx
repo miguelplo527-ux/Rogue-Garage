@@ -35,21 +35,20 @@ export default function HomePage() {
         alignItems: 'center',
         justifyContent: 'center',
         borderBottom: '1px solid #262b34',
-        overflow: 'hidden' // Importante para que la imagen no se salga
+        overflow: 'hidden'
       }}>
         
         {/* 1. Imagen de fondo */}
         <div style={{
           position: 'absolute',
           top: 0, left: 0, width: '100%', height: '100%',
-          // Corregimos la ruta con comillas y la carpeta images
           backgroundImage: 'url("/images/hero-bg.jpg")', 
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: 0
         }}></div>
 
-        {/* 2. Capa oscura para que el texto se lea bien */}
+        {/* 2. Capa oscura */}
         <div style={{
           position: 'absolute',
           top: 0, left: 0, width: '100%', height: '100%',
@@ -59,7 +58,7 @@ export default function HomePage() {
 
         {/* 3. Texto y Botones */}
         <div style={{ textAlign: 'center', padding: '0 1rem', maxWidth: '800px', zIndex: 2 }}>
-          <span style={{ color: '#d99a3d', fontWeight: 'bold', letterSpacing: '3px', textTransform: 'uppercase', fontSize: '0.9rem' }}>
+          <span style={{ color: '#3b82f6', fontWeight: 'bold', letterSpacing: '3px', textTransform: 'uppercase', fontSize: '0.9rem' }}>
             Bogotá · Motociclistas Urbanos
           </span>
           <h1 style={{ color: '#fff', fontSize: '4rem', fontWeight: '900', margin: '1rem 0', lineHeight: '1.1' }}>
@@ -69,7 +68,7 @@ export default function HomePage() {
             Accesorios, repuestos estéticos y detalles premium para motociclistas que no se conforman con lo básico.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <Link to={ROUTES.CATALOG} style={{ padding: '1rem 2.5rem', background: '#d99a3d', color: '#000', textDecoration: 'none', fontWeight: 'bold', borderRadius: '4px', fontSize: '1.1rem', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
+            <Link to={ROUTES.CATALOG} style={{ padding: '1rem 2.5rem', background: '#3b82f6', color: '#fff', textDecoration: 'none', fontWeight: 'bold', borderRadius: '4px', fontSize: '1.1rem', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
               Ver Catálogo
             </Link>
             <a href={whatsappLink} target="_blank" rel="noreferrer" style={{ padding: '1rem 2.5rem', background: 'transparent', color: '#fff', textDecoration: 'none', fontWeight: 'bold', border: '1px solid #fff', borderRadius: '4px', fontSize: '1.1rem' }}>
@@ -83,21 +82,21 @@ export default function HomePage() {
       <section style={{ background: '#14171d', padding: '2rem', borderBottom: '1px solid #262b34' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', textAlign: 'center' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-            <i className="fa-solid fa-motorcycle" style={{ color: '#d99a3d', fontSize: '1.8rem' }}></i>
+            <i className="fa-solid fa-motorcycle" style={{ color: '#3b82f6', fontSize: '1.8rem' }}></i>
             <div>
               <h3 style={{ color: '#fff', margin: 0, fontSize: '1.1rem' }}>Pensado para tu moto</h3>
               <p style={{ color: '#9aa0ab', margin: '5px 0 0 0', fontSize: '0.9rem' }}>Selección experta de accesorios.</p>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-            <i className="fa-solid fa-location-dot" style={{ color: '#d99a3d', fontSize: '1.8rem' }}></i>
+            <i className="fa-solid fa-location-dot" style={{ color: '#3b82f6', fontSize: '1.8rem' }}></i>
             <div>
               <h3 style={{ color: '#fff', margin: 0, fontSize: '1.1rem' }}>Con base en Bogotá</h3>
               <p style={{ color: '#9aa0ab', margin: '5px 0 0 0', fontSize: '0.9rem' }}>Conocemos las vías de la ciudad.</p>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-            <i className="fa-solid fa-handshake" style={{ color: '#d99a3d', fontSize: '1.8rem' }}></i>
+            <i className="fa-solid fa-handshake" style={{ color: '#3b82f6', fontSize: '1.8rem' }}></i>
             <div>
               <h3 style={{ color: '#fff', margin: 0, fontSize: '1.1rem' }}>Atención Directa</h3>
               <p style={{ color: '#9aa0ab', margin: '5px 0 0 0', fontSize: '0.9rem' }}>Hablas directo con los dueños.</p>
@@ -109,24 +108,24 @@ export default function HomePage() {
       {/* CATEGORÍAS DESTACADAS */}
       <section style={{ padding: '4rem 1rem', maxWidth: '1200px', margin: '0 auto', width: '100%', textAlign: 'center' }}>
         <h2 style={{ color: '#fff', fontSize: '2rem', marginBottom: '0.5rem' }}>Explora por Categoría</h2>
-        <div style={{ width: '60px', height: '4px', background: '#d99a3d', margin: '0 auto 3rem auto' }}></div>
+        <div style={{ width: '60px', height: '4px', background: '#3b82f6', margin: '0 auto 3rem auto' }}></div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
           <Link to={ROUTES.CATALOG} style={{ textDecoration: 'none' }}>
-            <div style={{ background: '#14171d', border: '1px solid #262b34', borderRadius: '8px', padding: '3rem 1rem', transition: 'all 0.3s', cursor: 'pointer' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#d99a3d'; e.currentTarget.style.transform = 'translateY(-5px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#262b34'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-              <i className="fa-solid fa-vest" style={{ color: '#d99a3d', fontSize: '2.5rem', marginBottom: '1rem' }}></i>
+            <div style={{ background: '#14171d', border: '1px solid #262b34', borderRadius: '8px', padding: '3rem 1rem', transition: 'all 0.3s', cursor: 'pointer' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.transform = 'translateY(-5px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#262b34'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+              <i className="fa-solid fa-vest" style={{ color: '#3b82f6', fontSize: '2.5rem', marginBottom: '1rem' }}></i>
               <h3 style={{ color: '#fff', margin: 0 }}>Indumentaria</h3>
             </div>
           </Link>
           <Link to={ROUTES.CATALOG} style={{ textDecoration: 'none' }}>
-            <div style={{ background: '#14171d', border: '1px solid #262b34', borderRadius: '8px', padding: '3rem 1rem', transition: 'all 0.3s', cursor: 'pointer' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#d99a3d'; e.currentTarget.style.transform = 'translateY(-5px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#262b34'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-              <i className="fa-solid fa-gears" style={{ color: '#d99a3d', fontSize: '2.5rem', marginBottom: '1rem' }}></i>
+            <div style={{ background: '#14171d', border: '1px solid #262b34', borderRadius: '8px', padding: '3rem 1rem', transition: 'all 0.3s', cursor: 'pointer' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.transform = 'translateY(-5px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#262b34'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+              <i className="fa-solid fa-gears" style={{ color: '#3b82f6', fontSize: '2.5rem', marginBottom: '1rem' }}></i>
               <h3 style={{ color: '#fff', margin: 0 }}>Repuestos</h3>
             </div>
           </Link>
           <Link to={ROUTES.CATALOG} style={{ textDecoration: 'none' }}>
-            <div style={{ background: '#14171d', border: '1px solid #262b34', borderRadius: '8px', padding: '3rem 1rem', transition: 'all 0.3s', cursor: 'pointer' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#d99a3d'; e.currentTarget.style.transform = 'translateY(-5px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#262b34'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-              <i className="fa-solid fa-gem" style={{ color: '#d99a3d', fontSize: '2.5rem', marginBottom: '1rem' }}></i>
+            <div style={{ background: '#14171d', border: '1px solid #262b34', borderRadius: '8px', padding: '3rem 1rem', transition: 'all 0.3s', cursor: 'pointer' }} onMouseEnter={e => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.transform = 'translateY(-5px)'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = '#262b34'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+              <i className="fa-solid fa-gem" style={{ color: '#3b82f6', fontSize: '2.5rem', marginBottom: '1rem' }}></i>
               <h3 style={{ color: '#fff', margin: 0 }}>Accesorios</h3>
             </div>
           </Link>
