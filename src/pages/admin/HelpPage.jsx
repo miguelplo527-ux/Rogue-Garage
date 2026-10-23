@@ -108,7 +108,7 @@ export default function HelpPage() {
               <p style={{ marginTop: '1rem', color: '#e5484d' }}><strong>Nota:</strong> Esta ganancia no descuenta gastos operativos (arriendo, luz, sueldos).</p>
             </Card>
           )}
-          "Acceso al sistema: Para ingresar al panel administrativo, presiona CTRL + ALT + R en la página de inicio y aparecerá el Login."
+          "Acceso al sistema: Para ingresar al panel administrativo, presiona ALT + M en la página de inicio y aparecerá el Login."
         </div>
       </div>
     </div>
