@@ -14,21 +14,28 @@ export default function PurchasesPage() {
   // Estados para Proveedores
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState('');
+  
+  // Estados para el formulario integrado de nuevo proveedor
+  const [showNewSupplier, setShowNewSupplier] = useState(false);
+  const [newSupplierName, setNewSupplierName] = useState('');
 
   // Cargar proveedores al iniciar
   useEffect(() => {
     supabase.from('suppliers').select('*').order('name').then(({ data }) => setSuppliers(data || []));
   }, []);
 
-  const addSupplier = async () => {
-    const name = window.prompt("Nombre del nuevo proveedor:");
-    if (name && name.trim()) {
-      const { data, error } = await supabase.from('suppliers').insert({ name: name.trim() }).select().single();
-      if (!error && data) {
-        setSuppliers([...suppliers, data]);
-        setSelectedSupplier(data.id);
-        toast.success('Proveedor agregado');
-      }
+  // Función para guardar el proveedor sin usar el prompt de Windows
+  const saveSupplier = async () => {
+    if (!newSupplierName.trim()) return;
+    const { data, error } = await supabase.from('suppliers').insert({ name: newSupplierName.trim() }).select().single();
+    if (!error && data) {
+      setSuppliers([...suppliers, data]);
+      setSelectedSupplier(data.id);
+      setShowNewSupplier(false);
+      setNewSupplierName('');
+      toast.success('Proveedor agregado');
+    } else {
+      toast.error('Error al crear proveedor');
     }
   };
 
@@ -85,8 +92,30 @@ export default function PurchasesPage() {
                   <option value="">-- Seleccionar Proveedor --</option>
                   {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
-                <button type="button" onClick={addSupplier} style={{ padding: '0 1rem', background: '#262b34', color: '#fff', border: '1px solid #444', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>+ Nuevo</button>
+                <button type="button" onClick={() => setShowNewSupplier(!showNewSupplier)} style={{ padding: '0 1rem', background: '#262b34', color: '#fff', border: '1px solid #444', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  {showNewSupplier ? 'Cancelar' : '+ Nuevo'}
+                </button>
               </div>
+
+              {/* FORMULARIO INTEGRADO PARA NUEVO PROVEEDOR */}
+              {showNewSupplier && (
+                <div style={{ marginTop: '10px', display: 'flex', gap: '10px', background: '#0b0d10', padding: '10px', borderRadius: '6px', border: '1px solid #3b82f6' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Nombre del proveedor (Ej: Bajaj)" 
+                    value={newSupplierName}
+                    onChange={(e) => setNewSupplierName(e.target.value)}
+                    style={{ flex: 1, padding: '0.8rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '4px', outline: 'none' }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={saveSupplier}
+                    style={{ padding: '0 1.5rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
+                  >
+                    Guardar
+                  </button>
+                </div>
+              )}
             </div>
 
             <div>
@@ -108,7 +137,7 @@ export default function PurchasesPage() {
               </div>
             </div>
 
-            <button type="submit" disabled={loading} style={{ padding: '1rem', background: '#d99a3d', color: '#000', fontWeight: 'bold', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '1rem' }}>
+            <button type="submit" disabled={loading} style={{ padding: '1rem', background: '#3b82f6', color: '#fff', fontWeight: 'bold', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '1rem' }}>
               {loading ? 'Registrando...' : 'Registrar Compra'}
             </button>
           </form>
@@ -125,7 +154,7 @@ export default function PurchasesPage() {
                 <span>Costo actual:</span><span>{formatMoney(productData.cost_price)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#9aa0ab' }}>
-                <span>Precio venta:</span><span style={{ color: '#d99a3d' }}>{formatMoney(productData.sale_price)}</span>
+                <span>Precio venta:</span><span style={{ color: '#3b82f6' }}>{formatMoney(productData.sale_price)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fff', borderTop: '1px solid #333', paddingTop: '1rem', fontWeight: 'bold' }}>
                 <span>Stock a actualizar:</span><span>{productData.stock} + {quantity || 0} = {productData.stock + Number(quantity || 0)}</span>
