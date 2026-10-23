@@ -19,7 +19,6 @@ function ProductForm({ onClose, onSuccess }) {
   
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  // Cargar los proveedores existentes
   useEffect(() => {
     supabase.from('suppliers').select('*').order('name').then(({ data }) => setSuppliers(data || []));
   }, []);
@@ -69,7 +68,7 @@ function ProductForm({ onClose, onSuccess }) {
         stock: Number(form.stock),
         category_id: catData?.id || null,
         category: form.category,
-        supplier_id: form.supplier_id || null // Guardamos el proveedor por defecto
+        supplier_id: form.supplier_id || null
       }); 
       toast.success('Producto creado exitosamente'); 
       onSuccess(); 
@@ -113,7 +112,6 @@ function ProductForm({ onClose, onSuccess }) {
           </div>
         </div>
 
-        {/* SELECTOR DE PROVEEDOR POR DEFECTO */}
         <div>
           <label style={{ color: '#9aa0ab', fontSize: '0.8rem', marginBottom: '5px', display: 'block' }}>Proveedor Principal (Opcional)</label>
           <select value={form.supplier_id} onChange={e => update('supplier_id', e.target.value)} style={inputStyle}>
@@ -166,18 +164,29 @@ export default function ProductsPage() {
   const { products, loading, reload } = useProducts();
   const [showForm, setShowForm] = useState(false);
   
+  // Estados para el nuevo Modal de Stock
+  const [editingStockProduct, setEditingStockProduct] = useState(null);
+  const [newStockValue, setNewStockValue] = useState('');
+
   const handleArchive = async (id) => {
     if (!window.confirm('¿Eliminar este producto?')) return;
     try { await productsService.archive(id); toast.success('Producto eliminado'); reload(); }
     catch { toast.error('Error al eliminar'); }
   };
 
-  const handleEditStock = async (product) => {
-    const newStock = window.prompt(`Corregir stock de "${product.name}" (Actual: ${product.stock}):`, product.stock);
-    if (newStock !== null && newStock !== '' && !isNaN(newStock)) {
+  // Abrir el modal en lugar del prompt
+  const openStockModal = (product) => {
+    setEditingStockProduct(product);
+    setNewStockValue(product.stock);
+  };
+
+  // Guardar el nuevo stock
+  const saveStock = async () => {
+    if (newStockValue !== null && newStockValue !== '' && !isNaN(newStockValue)) {
       try {
-        await supabase.from('products').update({ stock: Number(newStock) }).eq('id', product.id);
+        await supabase.from('products').update({ stock: Number(newStockValue) }).eq('id', editingStockProduct.id);
         toast.success('Stock actualizado');
+        setEditingStockProduct(null); // Cerrar modal
         reload();
       } catch (error) {
         toast.error('Error al actualizar stock');
@@ -202,7 +211,7 @@ export default function ProductsPage() {
             <th>Nombre</th>
             <th>Precio</th>
             <th>Stock</th>
-            <th>Acciones</th>
+            <th style={{ textAlign: 'center' }}>Acciones</th>
           </tr></thead>
           <tbody>
             {loading ? <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center' }}>Cargando...</td></tr> : products.map(p => (
@@ -216,17 +225,46 @@ export default function ProductsPage() {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>{p.stock} unds</span>
-                    <button onClick={() => handleEditStock(p)} style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6', color: '#3b82f6', cursor: 'pointer', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>Editar</button>
+                    <button onClick={() => openStockModal(p)} style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6', color: '#3b82f6', cursor: 'pointer', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>Editar</button>
                   </div>
                 </td>
-                <td>
-                  <button onClick={() => handleArchive(p.id)} style={{ background: 'none', border: 'none', color: '#e5484d', cursor: 'pointer', fontWeight: 'bold' }}>Eliminar</button>
+                <td style={{ display: 'flex', gap: '10px', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
+                  <button onClick={() => openStockModal(p)} style={{ background: '#262b34', border: '1px solid #444', color: '#fff', cursor: 'pointer', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <i className="fa-solid fa-pen"></i> Editar
+                  </button>
+                  <button onClick={() => handleArchive(p.id)} style={{ background: 'rgba(229, 72, 77, 0.1)', border: '1px solid #e5484d', color: '#e5484d', cursor: 'pointer', padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <i className="fa-solid fa-trash"></i> Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* MODAL PARA EDITAR EL STOCK (Reemplaza el prompt) */}
+      {editingStockProduct && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 }}>
+          <div style={{ background: '#14171d', padding: '2rem', borderRadius: '10px', width: '100%', maxWidth: '400px', border: '1px solid #262b34' }}>
+            <h3 style={{ color: '#fff', marginTop: 0, marginBottom: '1rem' }}>Corregir Stock</h3>
+            <p style={{ color: '#9aa0ab', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Producto: <strong style={{color:'#fff'}}>{editingStockProduct.name}</strong></p>
+            
+            <input 
+              type="number" 
+              value={newStockValue} 
+              onChange={(e) => setNewStockValue(e.target.value)}
+              autoFocus
+              style={{ width: '100%', padding: '1rem', background: '#000', border: '1px solid #333', color: '#fff', borderRadius: '6px', outline: 'none', fontSize: '1.2rem', marginBottom: '1.5rem', textAlign: 'center' }}
+            />
+
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button onClick={() => setEditingStockProduct(null)} style={{ flex: 1, padding: '0.8rem', background: 'transparent', border: '1px solid #555', color: '#fff', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Cancelar</button>
+              <button onClick={saveStock} style={{ flex: 1, padding: '0.8rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Guardar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showForm && <ProductForm onClose={() => setShowForm(false)} onSuccess={reload} />}
     </>
   );
