@@ -4,7 +4,6 @@ import { ROUTES } from '../../config/routes';
 
 export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [clickCount, setClickCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,30 +18,13 @@ export default function Navbar() {
     }
   };
 
-  // Magia: 5 clics en el logo para ir al login
-  const handleLogoClick = (e) => {
-    e.preventDefault(); 
-    const newCount = clickCount + 1;
-    setClickCount(newCount);
-
-    if (newCount >= 5) {
-      navigate(ROUTES.LOGIN); 
-      setClickCount(0);
-    } else {
-      if (newCount === 1) {
-        navigate(ROUTES.HOME);
-        setTimeout(() => setClickCount(0), 2000);
-      }
-    }
-  };
-
   return (
     <header style={{ background: '#0b0d10', padding: '1rem 2rem', borderBottom: '1px solid #262b34', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100, flexWrap: 'wrap', gap: '1rem' }}>
       
-      {/* Logo con el click secreto */}
-      <a href="/" onClick={handleLogoClick} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-        <img src="/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '45px', objectFit: 'contain' }} />
-      </a>
+      {/* Logo normal (sin clicks ocultos) con la ruta correcta a la carpeta images */}
+      <Link to={ROUTES.HOME} style={{ display: 'flex', alignItems: 'center' }}>
+        <img src="/images/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '45px', objectFit: 'contain' }} />
+      </Link>
       
       {/* BUSCADOR (Solo se muestra si NO estamos en el catálogo) */}
       {!isCatalogPage && (
