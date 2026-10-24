@@ -24,7 +24,7 @@ export default function Sidebar() {
   return (
     <aside style={{ width: '260px', background: '#06070a', padding: '1.5rem', borderRight: '1px solid #262b34', display: 'flex', flexDirection: 'column' }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        {/* RUTA CORREGIDA DEL LOGO */}
+        {/* RUTA DEL LOGO VERIFICADA */}
         <img src="/images/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '40px', margin: '0 auto 10px auto', display: 'block', objectFit: 'contain' }} />
         <span style={{ display: 'inline-block', background: '#3b82f6', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px', marginTop: '5px' }}>ADMIN</span>
       </div>
@@ -37,9 +37,8 @@ export default function Sidebar() {
         <NavLink to={ROUTES.ADMIN.SALES} style={linkStyle}><i className="fa-solid fa-cash-register"></i> Ventas</NavLink>
         <NavLink to={ROUTES.ADMIN.FINANCE} style={linkStyle}><i className="fa-solid fa-coins"></i> Finanzas</NavLink>
 
-        <div style={{ marginTop: '1rem', borderTop: '1px solid #262b34', paddingTop: '1rem' }}>
-          <NavLink to="/admin/ayuda" style={linkStyle}><i className="fa-solid fa-circle-question"></i> Manual / Ayuda</NavLink>
-        </div>
+        {/* El botón de Manual/Ayuda fue removido de aquí */}
+
       </nav>
 
       <div style={{ borderTop: '1px solid #262b34', paddingTop: '1rem' }}>
