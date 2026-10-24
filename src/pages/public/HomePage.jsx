@@ -24,7 +24,6 @@ export default function HomePage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigate]);
 
-  // Extraer las marcas reales de los productos disponibles
   useEffect(() => {
     if (products.length > 0) {
       const uniqueBrands = [...new Set(products.map(p => p.brand).filter(Boolean))];
@@ -33,9 +32,8 @@ export default function HomePage() {
   }, [products]);
 
   const whatsappLink = `https://wa.me/${ENV.WHATSAPP_NUMBER}?text=Hola%20ROGUE%20GARAGE,%20quiero%20saber%20más%20sobre%20sus%20productos`;
-  const instagramLink = "https://instagram.com/tu_instagram_aqui"; // <-- ACTUALIZA ESTE ENLACE
+  const instagramLink = "https://instagram.com/tu_instagram_aqui";
 
-  // Tomamos los 4 productos más recientes para mostrarlos
   const productosDestacados = products.slice(0, 4);
   const defaultImage = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop';
 
@@ -54,7 +52,6 @@ export default function HomePage() {
         overflow: 'hidden',
         backgroundColor: '#0b0d10'
       }}>
-        {/* Patrón de fondo sutil */}
         <div style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
           background: 'radial-gradient(circle at center, rgba(59, 130, 246, 0.15) 0%, transparent 60%)',
@@ -125,7 +122,7 @@ export default function HomePage() {
       </section>
 
       {/* PRODUCTOS DESTACADOS */}
-      <section id="catalogo-destacado" style={{ padding: '3rem 1rem', maxWidth: '1200px', margin: '0 auto', width: '100%', borderTop: '1px solid #262b34' }}>
+      <section id="catalogo-destacado" style={{ padding: '3rem 1rem', maxWidth: '1200px', margin: '0 auto', width: '100%', borderTop: '1px solid #262b34', flex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
           <div>
             <h2 style={{ color: '#fff', fontSize: '2rem', margin: 0 }}>Nuestros Productos</h2>

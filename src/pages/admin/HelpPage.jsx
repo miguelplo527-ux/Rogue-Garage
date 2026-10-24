@@ -8,9 +8,9 @@ export default function HelpPage() {
       onClick={() => setActiveTab(id)}
       style={{
         display: 'flex', alignItems: 'center', gap: '10px', padding: '1rem 1.5rem', width: '100%',
-        background: activeTab === id ? 'rgba(217, 154, 61, 0.1)' : 'transparent',
-        color: activeTab === id ? '#d99a3d' : '#9aa0ab',
-        border: 'none', borderLeft: activeTab === id ? '3px solid #d99a3d' : '3px solid transparent',
+        background: activeTab === id ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+        color: activeTab === id ? '#3b82f6' : '#9aa0ab',
+        border: 'none', borderLeft: activeTab === id ? '3px solid #3b82f6' : '3px solid transparent',
         cursor: 'pointer', textAlign: 'left', fontWeight: activeTab === id ? 'bold' : 'normal',
         fontSize: '1rem', transition: 'all 0.2s'
       }}
@@ -22,7 +22,7 @@ export default function HelpPage() {
   const Card = ({ title, children, icon }) => (
     <div style={{ background: '#14171d', padding: '2rem', borderRadius: '10px', border: '1px solid #262b34', marginBottom: '1.5rem' }}>
       <h3 style={{ color: '#fff', marginTop: 0, display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid #262b34', paddingBottom: '1rem' }}>
-        <i className={icon} style={{ color: '#d99a3d' }}></i> {title}
+        <i className={icon} style={{ color: '#3b82f6' }}></i> {title}
       </h3>
       <div style={{ color: '#9aa0ab', lineHeight: '1.6', marginTop: '1rem' }}>
         {children}
@@ -51,7 +51,7 @@ export default function HelpPage() {
         <div>
           {activeTab === 'inicio' && (
             <Card title="Cómo ingresar al sistema" icon="fa-solid fa-house">
-              <p><strong>1. Acceso:</strong> Abre el navegador y ve a la página de la tienda. En la esquina inferior o en la URL, agrega <code>/login</code>.</p>
+              <p><strong>1. Acceso:</strong> Abre el navegador y ve a la página de la tienda. Presiona la combinación de teclas <strong>Alt + M</strong> (o agrega <code>/login</code> a la URL).</p>
               <p><strong>2. Credenciales:</strong> Ingresa el correo y la contraseña que el administrador te asignó.</p>
               <p><strong>3. Panel:</strong> Una vez dentro, verás el menú de la izquierda. Tu rol determinará a qué secciones tienes acceso.</p>
             </Card>
@@ -59,7 +59,7 @@ export default function HelpPage() {
 
           {activeTab === 'productos' && (
             <Card title="Cómo registrar un producto nuevo" icon="fa-solid fa-box">
-              <p>Ve a la pestaña <strong>Productos</strong> y haz clic en el botón amarillo <strong>"+ Nuevo Producto"</strong>.</p>
+              <p>Ve a la pestaña <strong>Productos</strong> y haz clic en el botón azul <strong>"+ Nuevo Producto"</strong>.</p>
               <ul style={{ paddingLeft: '1.5rem', marginTop: '1rem' }}>
                 <li><strong>SKU:</strong> Es el código único del producto. Te sugerimos usar el formato: <code>TIPO-MARCA-CATEGORIA-NUMERO</code> (Ej: <code>RE-YAM-FRE-001</code>).</li>
                 <li><strong>Costo:</strong> Cuánto te costó a ti comprarlo (para calcular ganancias).</li>
@@ -67,7 +67,7 @@ export default function HelpPage() {
                 <li><strong>Imagen:</strong> Sube una foto clara del producto desde tu celular o PC.</li>
                 <li><strong>Stock:</strong> Cuántas unidades tienes físicamente en la tienda.</li>
               </ul>
-              <p style={{ marginTop: '1rem', color: '#d99a3d' }}><strong>Tip:</strong> Si el producto no tiene imagen, aparecerá un cuadro gris por defecto.</p>
+              <p style={{ marginTop: '1rem', color: '#3b82f6' }}><strong>Tip:</strong> Si el producto no tiene imagen, aparecerá un cuadro gris por defecto.</p>
             </Card>
           )}
 
@@ -77,7 +77,8 @@ export default function HelpPage() {
               <ol style={{ paddingLeft: '1.5rem', marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <li>Usa el buscador para encontrar el producto por su nombre o SKU.</li>
                 <li>Haz clic sobre el producto para agregarlo al carrito (puedes sumar más de uno).</li>
-                <li>Selecciona el método de pago (Efectivo, Nequi, Tarjeta).</li>
+                <li>Escribe el nombre del cliente (opcional).</li>
+                <li>Selecciona el método de pago (Efectivo, Nequi, Tarjeta, etc.).</li>
                 <li>Haz clic en <strong>"Confirmar Venta"</strong>.</li>
               </ol>
               <p style={{ marginTop: '1rem', color: '#4caf50' }}><strong>¡Automático!</strong> El sistema restará la unidad del inventario y sumará el dinero a tus finanzas.</p>
@@ -88,9 +89,9 @@ export default function HelpPage() {
             <Card title="Cómo ingresar mercancía nueva" icon="fa-solid fa-truck">
               <p>Cuando llegue un pedido de tu proveedor, ve a la pestaña <strong>Compras</strong>.</p>
               <ol style={{ paddingLeft: '1.5rem', marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <li>Selecciona el proveedor (puedes crear uno nuevo con el botón +).</li>
                 <li>Selecciona el producto al que le vas a sumar stock.</li>
-                <li>Escribe la cantidad que llegó (Ej: 10 unidades).</li>
-                <li>Escribe el costo unitario de esta nueva compra.</li>
+                <li>Escribe la cantidad que llegó (Ej: 10 unidades) y el costo unitario.</li>
                 <li>Haz clic en <strong>"Registrar Compra"</strong>.</li>
               </ol>
               <p style={{ marginTop: '1rem' }}>El stock del producto aumentará automáticamente en la sección de Inventario.</p>
@@ -108,7 +109,12 @@ export default function HelpPage() {
               <p style={{ marginTop: '1rem', color: '#e5484d' }}><strong>Nota:</strong> Esta ganancia no descuenta gastos operativos (arriendo, luz, sueldos).</p>
             </Card>
           )}
-          "Acceso al sistema: Para ingresar al panel administrativo, presiona ALT + M en la página de inicio y aparecerá el Login."
+
+          <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', borderLeft: '3px solid #3b82f6' }}>
+            <p style={{ color: '#d1d5db', margin: 0, fontSize: '0.9rem' }}>
+              <strong>Acceso al sistema:</strong> Para ingresar al panel administrativo desde la tienda, presiona <strong>ALT + M</strong> en la página de inicio y aparecerá el Login.
+            </p>
+          </div>
         </div>
       </div>
     </div>

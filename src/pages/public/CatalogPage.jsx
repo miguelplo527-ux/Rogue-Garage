@@ -12,12 +12,10 @@ export default function CatalogPage() {
   const [search, setSearch] = useState(queryParam);
   const { products, loading } = useProducts({ search });
 
-  // Si el cliente usa el buscador del menú, actualizamos el estado local
   useEffect(() => {
     setSearch(queryParam);
   }, [queryParam]);
 
-  // Si el cliente escribe en el input del catálogo, actualizamos la URL
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -36,7 +34,8 @@ export default function CatalogPage() {
       <section style={{ flex: 1, padding: '3rem 2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <h2 style={{ color: '#fff', fontSize: '2.5rem', margin: 0 }}>NUESTRO CATÁLOGO</h2>
-          <div style={{ width: '60px', height: '4px', background: '#d99a3d', margin: '10px auto' }}></div>
+          {/* Línea de acento cambiada a azul */}
+          <div style={{ width: '60px', height: '4px', background: '#3b82f6', margin: '10px auto' }}></div>
         </div>
         
         <input 
@@ -69,7 +68,8 @@ export default function CatalogPage() {
                       {p.brand || 'Genérico'} · {p.categories?.name || p.category || 'Accesorio'}
                     </span>
                     <h3 style={{ color: '#fff', margin: '0.5rem 0', fontSize: '1.2rem' }}>{p.name}</h3>
-                    <p style={{ color: '#d99a3d', fontWeight: 'bold', fontSize: '1.3rem', margin: '1rem 0 0 0' }}>{formatMoney(p.sale_price)}</p>
+                    {/* Precio cambiado a azul */}
+                    <p style={{ color: '#3b82f6', fontWeight: 'bold', fontSize: '1.3rem', margin: '1rem 0 0 0' }}>{formatMoney(p.sale_price)}</p>
                   </div>
                 </div>
               </Link>
@@ -80,7 +80,8 @@ export default function CatalogPage() {
                 <p style={{ color: '#9aa0ab', fontSize: '1.1rem' }}>
                   No se encontraron productos para "<strong>{search}</strong>".
                 </p>
-                <button onClick={() => handleSearchChange({ target: { value: '' } })} style={{ background: '#d99a3d', color: '#000', border: 'none', padding: '10px 20px', borderRadius: '4px', marginTop: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
+                {/* Botón cambiado a azul */}
+                <button onClick={() => handleSearchChange({ target: { value: '' } })} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '4px', marginTop: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
                   Ver todos los productos
                 </button>
               </div>
