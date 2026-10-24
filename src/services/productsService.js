@@ -1,11 +1,15 @@
 import { supabase } from './supabaseClient';
 
 export const productsService = {
-      async getAll(filters = {}) {
-    let query = supabase.from('products').select('*, categories(name)').eq('is_active', true).order('created_at', { ascending: false });
+  async getAll(filters = {}) {
+    // Agregamos 'profiles(full_name)' para traer el nombre de quien lo registró
+    let query = supabase
+      .from('products')
+      .select('*, categories(name), profiles(full_name)')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
     
     if (filters.search) {
-      // Ahora busca en nombre, SKU, marca y descripción
       query = query.or(`name.ilike.%${filters.search}%,sku.ilike.%${filters.search}%,brand.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
     }
     
