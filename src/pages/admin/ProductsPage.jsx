@@ -54,11 +54,16 @@ function ProductForm({ onClose, onSuccess }) {
     if (uploading) return toast.error('Espera a que la imagen termine de subir');
     
     try { 
-      const { data: catData } = await supabase
+      // FIX: maybeSingle() evita los errores 406 y 400 si no encuentra la categoría
+      const { data: catData, error: catError } = await supabase
         .from('categories')
         .select('id')
         .eq('name', form.category)
-        .single();
+        .maybeSingle();
+
+      if (catError) {
+        console.warn('Aviso: No se pudo obtener el ID de la categoría, se guardará solo el texto.', catError);
+      }
 
       await productsService.create({ 
         ...form, 
@@ -66,7 +71,7 @@ function ProductForm({ onClose, onSuccess }) {
         cost_price: Number(form.cost_price), 
         sale_price: Number(form.sale_price), 
         stock: Number(form.stock),
-        category_id: catData?.id || null,
+        category_id: catData?.id || null, // Si falla, guarda null
         category: form.category,
         supplier_id: form.supplier_id || null
       }); 
@@ -164,7 +169,6 @@ export default function ProductsPage() {
   const { products, loading, reload } = useProducts();
   const [showForm, setShowForm] = useState(false);
   
-  // Estados para el nuevo Modal de Stock
   const [editingStockProduct, setEditingStockProduct] = useState(null);
   const [newStockValue, setNewStockValue] = useState('');
 
@@ -174,19 +178,17 @@ export default function ProductsPage() {
     catch { toast.error('Error al eliminar'); }
   };
 
-  // Abrir el modal en lugar del prompt
   const openStockModal = (product) => {
     setEditingStockProduct(product);
     setNewStockValue(product.stock);
   };
 
-  // Guardar el nuevo stock
   const saveStock = async () => {
     if (newStockValue !== null && newStockValue !== '' && !isNaN(newStockValue)) {
       try {
         await supabase.from('products').update({ stock: Number(newStockValue) }).eq('id', editingStockProduct.id);
         toast.success('Stock actualizado');
-        setEditingStockProduct(null); // Cerrar modal
+        setEditingStockProduct(null);
         reload();
       } catch (error) {
         toast.error('Error al actualizar stock');
@@ -242,7 +244,6 @@ export default function ProductsPage() {
         </table>
       </div>
 
-      {/* MODAL PARA EDITAR EL STOCK (Reemplaza el prompt) */}
       {editingStockProduct && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 }}>
           <div style={{ background: '#14171d', padding: '2rem', borderRadius: '10px', width: '100%', maxWidth: '400px', border: '1px solid #262b34' }}>
