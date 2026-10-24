@@ -12,11 +12,11 @@ export default function Sidebar() {
     alignItems: 'center',
     gap: '10px',
     padding: '12px 15px', 
-    color: isActive ? '#3b82f6' : '#9aa0ab', // <-- Azul en lugar de amarillo
+    color: isActive ? '#3b82f6' : '#9aa0ab', 
     textDecoration: 'none', 
     borderRadius: '8px', 
     marginBottom: '8px', 
-    background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent', // <-- Azul transparente
+    background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent', 
     fontWeight: isActive ? 'bold' : 'normal',
     transition: 'all 0.2s'
   });
@@ -24,8 +24,9 @@ export default function Sidebar() {
   return (
     <aside style={{ width: '260px', background: '#06070a', padding: '1.5rem', borderRight: '1px solid #262b34', display: 'flex', flexDirection: 'column' }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <img src="/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '40px', margin: '0 auto 10px auto', display: 'block' }} />
-        <span style={{ display: 'inline-block', background: '#d99a3d', color: '#000', fontSize: '0.7rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px', marginTop: '5px' }}>ADMIN</span>
+        {/* RUTA CORREGIDA DEL LOGO */}
+        <img src="/images/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '40px', margin: '0 auto 10px auto', display: 'block', objectFit: 'contain' }} />
+        <span style={{ display: 'inline-block', background: '#3b82f6', color: '#fff', fontSize: '0.7rem', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px', marginTop: '5px' }}>ADMIN</span>
       </div>
       
       <nav style={{ flex: 1 }}>
@@ -36,11 +37,9 @@ export default function Sidebar() {
         <NavLink to={ROUTES.ADMIN.SALES} style={linkStyle}><i className="fa-solid fa-cash-register"></i> Ventas</NavLink>
         <NavLink to={ROUTES.ADMIN.FINANCE} style={linkStyle}><i className="fa-solid fa-coins"></i> Finanzas</NavLink>
 
-        {/* 👇 ESTE ES EL NUEVO BOTÓN DE AYUDA 👇 */}
         <div style={{ marginTop: '1rem', borderTop: '1px solid #262b34', paddingTop: '1rem' }}>
           <NavLink to="/admin/ayuda" style={linkStyle}><i className="fa-solid fa-circle-question"></i> Manual / Ayuda</NavLink>
         </div>
-
       </nav>
 
       <div style={{ borderTop: '1px solid #262b34', paddingTop: '1rem' }}>
