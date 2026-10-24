@@ -152,7 +152,12 @@ function ProductForm({ onClose, onSuccess }) {
           )}
         </div>
 
-        <textarea placeholder="Descripción del producto" rows="3" onChange={e => update('description', e.target.value)} style={{ ...inputStyle, resize: 'vertical' }} />
+        <textarea 
+          placeholder="Descripción del producto" 
+          rows="4" 
+          onChange={e => update('description', e.target.value)} 
+          style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }} 
+        />
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
           <button type="button" onClick={onClose} style={{ flex: 1, padding: '1rem', background: 'transparent', border: '1px solid #555', color: '#fff', borderRadius: '4px', cursor: 'pointer' }}>Cancelar</button>
