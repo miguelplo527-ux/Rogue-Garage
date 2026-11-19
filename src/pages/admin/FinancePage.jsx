@@ -26,48 +26,48 @@ export default function FinancePage() {
     load();
   }, []);
 
-  const cardStyle = { background: '#14171d', padding: '2rem', borderRadius: '10px', borderLeft: '4px solid' };
+  const cardStyle = { background: '#1d2430', padding: '2rem', borderRadius: '10px', borderLeft: '4px solid' };
 
   return (
     <>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ color: '#fff', fontSize: '2rem', margin: 0 }}>Estado Financiero</h1>
-        <p style={{ color: '#9aa0ab', margin: '0.5rem 0 0 0' }}>Rentabilidad real del negocio</p>
+        <p style={{ color: '#aab2c0', margin: '0.5rem 0 0 0' }}>Rentabilidad real del negocio</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
         <div style={{ ...cardStyle, borderLeftColor: '#4caf50' }}>
-          <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Ingresos por Ventas</h3>
+          <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Ingresos por Ventas</h3>
           <p style={{ color: '#4caf50', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{formatMoney(stats.ingresos)}</p>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: '#e5484d' }}>
-          <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Costo de Mercancía</h3>
+          <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Costo de Mercancía</h3>
           <p style={{ color: '#e5484d', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{formatMoney(stats.costos)}</p>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: '#f59e0b' }}>
-          <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Gastos Operativos</h3>
+          <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Gastos Operativos</h3>
           <p style={{ color: '#f59e0b', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{formatMoney(stats.gastosOp)}</p>
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
         {/* GANANCIA NETA */}
-        <div style={{ ...cardStyle, borderLeftColor: '#3b82f6', background: 'linear-gradient(45deg, #14171d, #1e293b)' }}>
-          <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '1rem' }}>Ganancia Neta Real</h3>
+        <div style={{ ...cardStyle, borderLeftColor: '#c8a874', background: 'linear-gradient(45deg, #1d2430, #1e293b)' }}>
+          <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '1rem' }}>Ganancia Neta Real</h3>
           <p style={{ color: '#fff', fontSize: '3rem', margin: '0.5rem 0', fontWeight: '900' }}>{formatMoney(stats.ganancia)}</p>
-          <p style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Descontando costos y gastos operativos</p>
+          <p style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Descontando costos y gastos operativos</p>
         </div>
 
         {/* MARGEN DE RENTABILIDAD */}
         <div style={cardStyle}>
-          <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '1rem' }}>Margen de Rentabilidad</h3>
+          <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '1rem' }}>Margen de Rentabilidad</h3>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', margin: '0.5rem 0' }}>
-            <p style={{ color: stats.margen >= 0 ? '#3b82f6' : '#e5484d', fontSize: '3rem', margin: 0, fontWeight: '900' }}>{stats.margen}%</p>
+            <p style={{ color: stats.margen >= 0 ? '#c8a874' : '#e5484d', fontSize: '3rem', margin: 0, fontWeight: '900' }}>{stats.margen}%</p>
           </div>
-          <div style={{ width: '100%', height: '8px', background: '#262b34', borderRadius: '4px', marginTop: '1rem', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${Math.min(Math.max(stats.margen, 0), 100)}%`, background: '#3b82f6', borderRadius: '4px' }}></div>
+          <div style={{ width: '100%', height: '8px', background: '#4b576b', borderRadius: '4px', marginTop: '1rem', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${Math.min(Math.max(stats.margen, 0), 100)}%`, background: '#c8a874', borderRadius: '4px' }}></div>
           </div>
-          <p style={{ color: '#9aa0ab', margin: '1rem 0 0 0', fontSize: '0.9rem' }}>Porcentaje de dinero que queda libre por cada venta.</p>
+          <p style={{ color: '#aab2c0', margin: '1rem 0 0 0', fontSize: '0.9rem' }}>Porcentaje de dinero que queda libre por cada venta.</p>
         </div>
       </div>
     </>

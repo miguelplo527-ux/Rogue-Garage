@@ -1,4 +1,4 @@
-﻿import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
 
 import HomePage from '../pages/public/HomePage';
@@ -6,6 +6,9 @@ import CatalogPage from '../pages/public/CatalogPage';
 import ProductDetailPage from '../pages/public/ProductDetailPage';
 import ContactPage from '../pages/public/ContactPage';
 import LoginPage from '../pages/auth/LoginPage';
+import RegisterPage from '../pages/auth/RegisterPage';
+import AboutPage from '../pages/public/AboutPage';
+import CartPage from '../pages/public/CartPage';
 
 import Layout from '../components/layout/Layout';
 import DashboardPage from '../pages/admin/DashboardPage';
@@ -29,7 +32,14 @@ export default function AppRoutes() {
       <Route path={ROUTES.CATALOG} element={<CatalogPage />} />
       <Route path="/producto/:id" element={<ProductDetailPage />} />
       <Route path={ROUTES.CONTACT} element={<ContactPage />} />
+      <Route path={ROUTES.ABOUT} element={<AboutPage />} />
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+      <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+
+      {/* CARRITO: solo con sesión iniciada */}
+      <Route element={<ProtectedRoute />}>
+        <Route path={ROUTES.CART} element={<CartPage />} />
+      </Route>
 
       {/* RUTAS PRIVADAS (ADMIN) */}
       <Route element={<ProtectedRoute />}>

@@ -8,9 +8,9 @@ export default function HelpPage() {
       onClick={() => setActiveTab(id)}
       style={{
         display: 'flex', alignItems: 'center', gap: '10px', padding: '1rem 1.5rem', width: '100%',
-        background: activeTab === id ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-        color: activeTab === id ? '#3b82f6' : '#9aa0ab',
-        border: 'none', borderLeft: activeTab === id ? '3px solid #3b82f6' : '3px solid transparent',
+        background: activeTab === id ? 'rgba(200, 168, 116, 0.1)' : 'transparent',
+        color: activeTab === id ? '#c8a874' : '#aab2c0',
+        border: 'none', borderLeft: activeTab === id ? '3px solid #c8a874' : '3px solid transparent',
         cursor: 'pointer', textAlign: 'left', fontWeight: activeTab === id ? 'bold' : 'normal',
         fontSize: '1rem', transition: 'all 0.2s'
       }}
@@ -20,11 +20,11 @@ export default function HelpPage() {
   );
 
   const Card = ({ title, children, icon }) => (
-    <div style={{ background: '#14171d', padding: '2rem', borderRadius: '10px', border: '1px solid #262b34', marginBottom: '1.5rem' }}>
-      <h3 style={{ color: '#fff', marginTop: 0, display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid #262b34', paddingBottom: '1rem' }}>
-        <i className={icon} style={{ color: '#3b82f6' }}></i> {title}
+    <div style={{ background: '#1d2430', padding: '2rem', borderRadius: '10px', border: '1px solid #4b576b', marginBottom: '1.5rem' }}>
+      <h3 style={{ color: '#fff', marginTop: 0, display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid #4b576b', paddingBottom: '1rem' }}>
+        <i className={icon} style={{ color: '#c8a874' }}></i> {title}
       </h3>
-      <div style={{ color: '#9aa0ab', lineHeight: '1.6', marginTop: '1rem' }}>
+      <div style={{ color: '#aab2c0', lineHeight: '1.6', marginTop: '1rem' }}>
         {children}
       </div>
     </div>
@@ -34,12 +34,12 @@ export default function HelpPage() {
     <div>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ color: '#fff', fontSize: '2rem', margin: 0 }}>Centro de Ayuda</h1>
-        <p style={{ color: '#9aa0ab', margin: '0.5rem 0 0 0' }}>Guía paso a paso para el manejo del sistema ROGUE GARAGE</p>
+        <p style={{ color: '#aab2c0', margin: '0.5rem 0 0 0' }}>Guía paso a paso para el manejo del sistema ROGUE GARAGE</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '2rem' }}>
         {/* Menú Lateral de Ayuda */}
-        <div style={{ background: '#14171d', borderRadius: '10px', border: '1px solid #262b34', overflow: 'hidden', height: 'fit-content' }}>
+        <div style={{ background: '#1d2430', borderRadius: '10px', border: '1px solid #4b576b', overflow: 'hidden', height: 'fit-content' }}>
           <TabButton id="inicio" label="Inicio y Login" icon="fa-solid fa-house" />
           <TabButton id="productos" label="Crear Productos" icon="fa-solid fa-box" />
           <TabButton id="ventas" label="Realizar Ventas" icon="fa-solid fa-cash-register" />
@@ -67,7 +67,7 @@ export default function HelpPage() {
                 <li><strong>Imagen:</strong> Sube una foto clara del producto desde tu celular o PC.</li>
                 <li><strong>Stock:</strong> Cuántas unidades tienes físicamente en la tienda.</li>
               </ul>
-              <p style={{ marginTop: '1rem', color: '#3b82f6' }}><strong>Tip:</strong> Si el producto no tiene imagen, aparecerá un cuadro gris por defecto.</p>
+              <p style={{ marginTop: '1rem', color: '#c8a874' }}><strong>Tip:</strong> Si el producto no tiene imagen, aparecerá un cuadro gris por defecto.</p>
             </Card>
           )}
 
@@ -110,7 +110,7 @@ export default function HelpPage() {
             </Card>
           )}
 
-          <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '8px', borderLeft: '3px solid #3b82f6' }}>
+          <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(200, 168, 116, 0.1)', borderRadius: '8px', borderLeft: '3px solid #c8a874' }}>
             <p style={{ color: '#d1d5db', margin: 0, fontSize: '0.9rem' }}>
               <strong>Acceso al sistema:</strong> Para ingresar al panel administrativo desde la tienda, presiona <strong>ALT + M</strong> en la página de inicio y aparecerá el Login.
             </p>

@@ -1,58 +1,80 @@
-﻿import { useState } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import Logo from './Logo';
 import { ROUTES } from '../../config/routes';
+import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../hooks/useCart';
+
+const linkClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`;
 
 export default function Navbar() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [open, setOpen] = useState(false);
+  const { user, isAdmin, displayName, logout } = useAuth();
+  const { count } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Verificamos si estamos en la página del catálogo
-  const isCatalogPage = location.pathname === ROUTES.CATALOG;
+  // Cierra el menú móvil al cambiar de página
+  useEffect(() => setOpen(false), [location.pathname]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`${ROUTES.CATALOG}?q=${encodeURIComponent(searchTerm.trim())}`);
-      setSearchTerm('');
-    }
+  const handleLogout = async () => {
+    await logout();
+    toast.success('Sesión cerrada');
+    navigate(ROUTES.HOME);
   };
 
   return (
-    <header style={{ background: '#0b0d10', padding: '1rem 2rem', borderBottom: '1px solid #262b34', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100, flexWrap: 'wrap', gap: '1rem' }}>
-      
-      {/* Logo normal (sin clicks ocultos) con la ruta correcta a la carpeta images */}
-      <Link to={ROUTES.HOME} style={{ display: 'flex', alignItems: 'center' }}>
-        <img src="/images/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '45px', objectFit: 'contain' }} />
-      </Link>
-      
-      {/* BUSCADOR (Solo se muestra si NO estamos en el catálogo) */}
-      {!isCatalogPage && (
-        <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: '400px', display: 'flex', position: 'relative' }}>
-          <input 
-            type="text" 
-            placeholder="Buscar productos, marcas..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ width: '100%', padding: '0.6rem 1rem', background: '#14171d', border: '1px solid #333', color: '#fff', borderRadius: '30px', outline: 'none', paddingRight: '40px' }}
-          />
-          <button type="submit" style={{ position: 'absolute', right: '5px', top: '5px', background: '#3b82f6', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <i className="fa-solid fa-magnifying-glass" style={{ color: '#fff', fontSize: '0.8rem' }}></i>
-          </button>
-        </form>
-      )}
+    <header className="site-header">
+      <span className="header-wing left" aria-hidden="true" />
+      <span className="header-wing right" aria-hidden="true" />
+      <div className="container header-inner">
+        <Logo />
 
-      {/* Si estamos en el catálogo, este div empuja los enlaces a la derecha */}
-      {isCatalogPage && <div style={{ flex: 1 }}></div>}
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={open}
+          aria-controls="menu-principal"
+          onClick={() => setOpen((o) => !o)}
+        >
+          <i className={`fa-solid ${open ? 'fa-xmark' : 'fa-bars'}`} />
+        </button>
 
-      <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-        <NavLink to={ROUTES.HOME} end style={({ isActive }) => ({ color: isActive ? '#3b82f6' : '#9aa0ab', textDecoration: 'none', fontWeight: 'bold' })}>
-          Inicio
-        </NavLink>
-        <NavLink to={ROUTES.CATALOG} style={({ isActive }) => ({ color: isActive ? '#3b82f6' : '#9aa0ab', textDecoration: 'none', fontWeight: 'bold' })}>
-          Catálogo
-        </NavLink>
-      </nav>
+        <div id="menu-principal" className={`nav-panel${open ? ' open' : ''}`}>
+          <nav aria-label="Principal">
+            <ul className="nav-links">
+              <li><NavLink to={ROUTES.HOME} end className={linkClass}>Inicio</NavLink></li>
+              <li><NavLink to={ROUTES.CATALOG} className={linkClass}>Catálogo</NavLink></li>
+              <li><NavLink to={ROUTES.ABOUT} className={linkClass}>Sobre nosotros</NavLink></li>
+              {!user && (
+                <li><NavLink to={ROUTES.LOGIN} className={({ isActive }) => `nav-link login-link${isActive ? ' active' : ''}`}>
+                  <i className="fa-regular fa-user" /> Login
+                </NavLink></li>
+              )}
+            </ul>
+          </nav>
+
+          {user && (
+            <div className="nav-end">
+              <NavLink to={ROUTES.CART} className={(s) => `${linkClass(s)} cart-link`} aria-label={`Carrito, ${count} artículos`}>
+                <i className="fa-solid fa-cart-shopping" /> Carrito
+                {count > 0 && <span className="cart-badge">{count}</span>}
+              </NavLink>
+              {isAdmin && (
+                <NavLink to={ROUTES.ADMIN.DASHBOARD} className={linkClass}>
+                  <i className="fa-solid fa-gauge" /> Panel
+                </NavLink>
+              )}
+              <span className="user-chip" title={user.email}>{displayName}</span>
+              <button type="button" className="nav-link nav-btn" onClick={handleLogout}>
+                <i className="fa-solid fa-right-from-bracket" /> Salir
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </header>
   );
 }

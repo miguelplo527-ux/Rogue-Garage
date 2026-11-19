@@ -54,8 +54,8 @@ export default function DashboardPage() {
   }, []);
 
   const cardStyle = {
-    background: '#14171d', padding: '1.5rem', borderRadius: '10px', 
-    border: '1px solid #262b34', boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
+    background: '#1d2430', padding: '1.5rem', borderRadius: '10px', 
+    border: '1px solid #4b576b', boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
   };
 
   if (loading) return <div style={{color: '#fff', padding: '2rem'}}>Cargando dashboard...</div>;
@@ -65,7 +65,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ color: '#fff', fontSize: '2rem', margin: 0 }}>Resumen General</h1>
-          <p style={{ color: '#9aa0ab', margin: '0.5rem 0 0 0' }}>Monitoreo en tiempo real de ROGUE GARAGE</p>
+          <p style={{ color: '#aab2c0', margin: '0.5rem 0 0 0' }}>Monitoreo en tiempo real de ROGUE GARAGE</p>
         </div>
       </div>
 
@@ -73,15 +73,15 @@ export default function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Ingresos Totales</h3>
-            <i className="fa-solid fa-sack-dollar" style={{ color: '#3b82f6', fontSize: '1.5rem' }}></i>
+            <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Ingresos Totales</h3>
+            <i className="fa-solid fa-sack-dollar" style={{ color: '#c8a874', fontSize: '1.5rem' }}></i>
           </div>
-          <p style={{ color: '#3b82f6', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{formatMoney(stats.ingresos)}</p>
+          <p style={{ color: '#c8a874', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{formatMoney(stats.ingresos)}</p>
         </div>
 
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Ventas Registradas</h3>
+            <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Ventas Registradas</h3>
             <i className="fa-solid fa-receipt" style={{ color: '#4caf50', fontSize: '1.5rem' }}></i>
           </div>
           <p style={{ color: '#fff', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{stats.ventas}</p>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
 
         <div style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ color: '#9aa0ab', margin: 0, fontSize: '0.9rem' }}>Productos Activos</h3>
+            <h3 style={{ color: '#aab2c0', margin: 0, fontSize: '0.9rem' }}>Productos Activos</h3>
             <i className="fa-solid fa-box" style={{ color: '#fff', fontSize: '1.5rem' }}></i>
           </div>
           <p style={{ color: '#fff', fontSize: '2rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>{stats.productos}</p>
@@ -105,17 +105,17 @@ export default function DashboardPage() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#c8a874" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#c8a874" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="name" stroke="#9aa0ab" />
-                <YAxis stroke="#9aa0ab" tickFormatter={(value) => `$${value/1000}k`} />
+                <XAxis dataKey="name" stroke="#aab2c0" />
+                <YAxis stroke="#aab2c0" tickFormatter={(value) => `$${value/1000}k`} />
                 <Tooltip 
-                  contentStyle={{ background: '#0b0d10', border: '1px solid #3b82f6', borderRadius: '8px', color: '#fff' }}
+                  contentStyle={{ background: '#151a22', border: '1px solid #c8a874', borderRadius: '8px', color: '#fff' }}
                   formatter={(value) => [formatMoney(value), 'Ingresos']}
                 />
-                <Area type="monotone" dataKey="total" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
+                <Area type="monotone" dataKey="total" stroke="#c8a874" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -132,14 +132,14 @@ export default function DashboardPage() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {stats.stockBajo.map(p => (
-                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', background: '#0b0d10', padding: '10px', borderRadius: '6px', borderLeft: '3px solid #e5484d' }}>
+                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', background: '#151a22', padding: '10px', borderRadius: '6px', borderLeft: '3px solid #e5484d' }}>
                   <span style={{ color: '#fff', fontSize: '0.85rem' }}>{p.name}</span>
                   <span style={{ color: '#e5484d', fontWeight: 'bold', fontSize: '0.85rem' }}>{p.stock} unds</span>
                 </div>
               ))}
             </div>
           )}
-          <Link to={ROUTES.ADMIN.PURCHASES} style={{ display: 'block', textAlign: 'center', marginTop: '1.5rem', background: '#262b34', color: '#fff', textDecoration: 'none', padding: '10px', borderRadius: '6px', fontSize: '0.9rem' }}>
+          <Link to={ROUTES.ADMIN.PURCHASES} style={{ display: 'block', textAlign: 'center', marginTop: '1.5rem', background: '#4b576b', color: '#fff', textDecoration: 'none', padding: '10px', borderRadius: '6px', fontSize: '0.9rem' }}>
             Ir a Compras para Reponer
           </Link>
         </div>

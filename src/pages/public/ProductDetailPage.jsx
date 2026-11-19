@@ -1,103 +1,103 @@
-﻿import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import Navbar from '../../components/layout/Navbar';
-import Footer from '../../components/layout/Footer';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import StoreLayout from '../../components/layout/StoreLayout';
+import ZoomImage from '../../components/products/ZoomImage';
 import { productsService } from '../../services/productsService';
 import { formatMoney } from '../../utils/formatters';
 import { ENV } from '../../config/env';
 import { ROUTES } from '../../config/routes';
+import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../hooks/useCart';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
-    productsService.getById(id)
-      .then(setProduct)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setLoading(true);
+    productsService.getById(id).then(setProduct).catch(console.error).finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div style={{ background: '#0b0d10', minHeight: '100vh', color: '#fff', padding: '50px' }}>Cargando producto...</div>;
-  if (!product) return <div style={{ background: '#0b0d10', minHeight: '100vh', color: '#fff', padding: '50px' }}>Producto no encontrado. <Link to={ROUTES.CATALOG} style={{ color: '#d99a3d' }}>Volver al catálogo</Link></div>;
+  if (loading) return <StoreLayout floating={false}><p className="loader">Cargando producto...</p></StoreLayout>;
+  if (!product) {
+    return (
+      <StoreLayout floating={false}>
+        <div className="container section">
+          <div className="empty">
+            <i className="fa-solid fa-triangle-exclamation" />
+            <h3>No encontramos este producto</h3>
+            <Link to={ROUTES.CATALOG} className="btn btn-primary">Volver al catálogo</Link>
+          </div>
+        </div>
+      </StoreLayout>
+    );
+  }
+
+  const category = product.categories?.name || product.category || 'Accesorio';
+  const inStock = product.stock > 0;
+
+  const handleAdd = () => {
+    if (!user) {
+      toast('Inicia sesión para agregar productos al carrito', { icon: '🔒' });
+      navigate(ROUTES.LOGIN, { state: { from: location } });
+      return;
+    }
+    const res = addToCart(product, qty);
+    if (!res.ok) return toast.error('Este producto está agotado');
+    toast.success(res.capped ? 'Agregaste el máximo disponible' : 'Agregado al carrito');
+  };
 
   const waLink = `https://wa.me/${ENV.WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hola ROGUE GARAGE, estoy interesado en este producto:\n\n*${product.name}*\nPrecio: ${formatMoney(product.sale_price)}\nSKU: ${product.sku}\n\n¿Está disponible?`
+    `Hola Rogue Garage, quiero consultar por:\n\n*${product.name}*\nPrecio: ${formatMoney(product.sale_price)}\nSKU: ${product.sku}\n\n¿Es compatible con mi camioneta?`
   )}`;
 
   return (
-    <div style={{ background: '#0b0d10', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
-      
-      <section style={{ flex: 1, padding: '3rem 2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-        <Link to={ROUTES.CATALOG} style={{ color: '#9aa0ab', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2rem' }}>
-          <i className="fa-solid fa-arrow-left"></i> Volver al catálogo
-        </Link>
+    <StoreLayout>
+      <div className="container">
+        <Link to={ROUTES.CATALOG} className="crumb"><i className="fa-solid fa-arrow-left" /> Volver al catálogo</Link>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', background: '#14171d', borderRadius: '12px', padding: '3rem', border: '1px solid #262b34' }}>
-          
-          {/* Imagen del Producto */}
+        <div className="detail-grid">
           <div>
-            <img 
-              src={product.image_url || 'https://via.placeholder.com/600x600?text=Sin+Imagen'} 
-              alt={product.name} 
-              style={{ width: '100%', borderRadius: '8px', objectFit: 'cover', border: '1px solid #262b34' }} 
-            />
+            <ZoomImage src={product.image_url} alt={product.name} />
+            <p className="zoom-hint">Pasa el mouse sobre la imagen para ampliarla.</p>
           </div>
 
-          {/* Información del Producto */}
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <span style={{ color: '#d99a3d', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem' }}>
-             {product.brand || 'Genérico'} · {product.categories?.name || product.category || 'Accesorio'}
-            </span>
-            
-            <h1 style={{ color: '#fff', fontSize: '2.5rem', margin: '0 0 1rem 0', lineHeight: '1.2' }}>{product.name}</h1>
-            
-            <p style={{ color: '#9aa0ab', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-              {product.description || 'Este producto no tiene una descripción detallada todavía.'}
-            </p>
+          <div className="detail-info">
+            <span className="p-brand">{product.brand || 'Genérico'} · {category}</span>
+            <h1>{product.name}</h1>
+            <p className="desc">{product.description || 'Este producto aún no tiene una descripción detallada. Escríbenos y te contamos todo.'}</p>
 
-            <div style={{ borderTop: '1px solid #262b34', paddingTop: '2rem', marginBottom: '2rem' }}>
-              <span style={{ color: '#9aa0ab', display: 'block', marginBottom: '0.5rem' }}>Precio:</span>
-              <span style={{ color: '#d99a3d', fontSize: '3rem', fontWeight: 'bold' }}>{formatMoney(product.sale_price)}</span>
+            <div className="detail-price">{formatMoney(product.sale_price)}</div>
+            <div className={`stock-pill ${inStock ? 'in' : 'out'}`}>
+              <i className={`fa-solid ${inStock ? 'fa-check' : 'fa-xmark'}`} />
+              {inStock ? `Disponible (${product.stock} en stock)` : 'Agotado por ahora'}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-              <span style={{ color: '#9aa0ab' }}>Disponibilidad:</span>
-              {product.stock > 0 ? (
-                <span style={{ color: '#4caf50', fontWeight: 'bold', background: 'rgba(76,175,80,0.1)', padding: '5px 12px', borderRadius: '20px' }}>
-                  <i className="fa-solid fa-check"></i> En Stock ({product.stock} disponibles)
-                </span>
-              ) : (
-                <span style={{ color: '#e5484d', fontWeight: 'bold', background: 'rgba(229,72,77,0.1)', padding: '5px 12px', borderRadius: '20px' }}>
-                  <i className="fa-solid fa-xmark"></i> Agotado por ahora
-                </span>
+            <div className="buy-row">
+              {inStock && (
+                <div className="qty" role="group" aria-label="Cantidad">
+                  <button type="button" aria-label="Quitar una unidad" disabled={qty <= 1} onClick={() => setQty((q) => q - 1)}>−</button>
+                  <output>{qty}</output>
+                  <button type="button" aria-label="Agregar una unidad" disabled={qty >= product.stock} onClick={() => setQty((q) => q + 1)}>+</button>
+                </div>
               )}
-            </div>
-
-            {/* Botón de WhatsApp */}
-            {product.stock > 0 ? (
-              <a 
-                href={waLink} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%', background: '#25d366', color: '#000', padding: '1.2rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.2rem', transition: 'transform 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-              >
-                <i className="fa-brands fa-whatsapp" style={{ fontSize: '1.5rem' }}></i> Comprar por WhatsApp
-              </a>
-            ) : (
-              <button disabled style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', width: '100%', background: '#262b34', color: '#666', padding: '1.2rem', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1.2rem', cursor: 'not-allowed' }}>
-                Producto Agotado
+              <button type="button" className="btn btn-primary" onClick={handleAdd} disabled={!inStock}>
+                <i className="fa-solid fa-cart-plus" /> {user ? 'Agregar al carrito' : 'Inicia sesión para comprar'}
               </button>
-            )}
+              <a href={waLink} target="_blank" rel="noreferrer" className="btn btn-ghost">
+                <i className="fa-brands fa-whatsapp" /> Consultar compatibilidad
+              </a>
+            </div>
           </div>
         </div>
-      </section>
-      
-      <Footer />
-    </div>
+      </div>
+    </StoreLayout>
   );
 }

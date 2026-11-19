@@ -1,1 +1,6 @@
-﻿export const ENV = { SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL, SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY, WHATSAPP_NUMBER: import.meta.env.VITE_WHATSAPP_NUMBER || '573000000000' };
+export const ENV = {
+  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+  SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  WHATSAPP_NUMBER: import.meta.env.VITE_WHATSAPP_NUMBER || '573000000000',
+  INSTAGRAM_URL: import.meta.env.VITE_INSTAGRAM_URL || '',
+};

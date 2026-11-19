@@ -6,6 +6,15 @@ export const authService = {
     if (error) throw error;
     return data;
   },
+  async register(email, password, fullName) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    });
+    if (error) throw error;
+    return data;
+  },
   async logout() {
     await supabase.auth.signOut();
   },
@@ -18,7 +27,7 @@ export const authService = {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
     if (error) throw error;
     return data;
   },

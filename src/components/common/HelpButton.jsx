@@ -8,10 +8,10 @@ export default function HelpButton() {
       onClick={() => navigate('/admin/ayuda')}
       style={{
         position: 'fixed', bottom: '30px', right: '30px', zIndex: 9999,
-        background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '50%',
+        background: '#c8a874', color: '#1a1408', border: 'none', borderRadius: '50%',
         width: '60px', height: '60px', display: 'flex', flexDirection: 'column', 
         alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-        boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)', transition: 'transform 0.2s'
+        boxShadow: '0 4px 15px rgba(200, 168, 116, 0.4)', transition: 'transform 0.2s'
       }}
       onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}

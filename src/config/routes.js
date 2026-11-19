@@ -1,9 +1,12 @@
-﻿export const ROUTES = {
+export const ROUTES = {
   HOME: '/',
   CATALOG: '/catalogo',
   PRODUCT: '/producto/:id',
+  ABOUT: '/nosotros',
   CONTACT: '/contacto',
   LOGIN: '/login',
+  REGISTER: '/registro',
+  CART: '/carrito',
   ADMIN: {
     DASHBOARD: '/admin',
     PRODUCTS: '/admin/productos',
