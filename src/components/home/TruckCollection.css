@@ -199,5 +199,5 @@
 .tc.is-mobile .tc-img { left: 0; width: 100%; }
 .tc.is-mobile .tc-controls { left: 0; right: 0; bottom: 1.5%; justify-content: center; }
 .tc.is-mobile .tc-detail { flex-direction: column; gap: 12px; top: 81%; }
-.tc.is-mobile .tc-detail p { font-size: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tc.is-mobile .tc-detail p { font-size: 1rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .tc.is-mobile .tc-back { align-self: flex-start; }
