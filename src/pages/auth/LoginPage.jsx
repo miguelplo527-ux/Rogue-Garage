@@ -1,93 +1,149 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import StoreLayout from '../../components/layout/StoreLayout';
+import OtpModal from '../../components/common/OtpModal';
 import { useAuth } from '../../hooks/useAuth';
+import { authService } from '../../services/authService';
+import { ROUTES } from '../../config/routes';
+import { ENV } from '../../config/env';
 
-export default function LoginPage() {
-  const { login } = useAuth(); 
+export default function LoginPage({ initialMode = 'login' }) {
+  const { user, login, register } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState(''); 
-  const [password, setPassword] = useState(''); 
-  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const from = location.state?.from?.pathname
+    ? `${location.state.from.pathname}${location.state.from.search || ''}`
+    : null;
+
+  const [mode, setMode] = useState(initialMode);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [accepted, setAccepted] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [otp, setOtp] = useState(null); // { email, type: 'email' | 'signup' }
+  const [dest, setDest] = useState(null);
+
+  // Redirige cuando la sesión ya está disponible (evita carreras con rutas protegidas)
+  useEffect(() => {
+    if (user && !otp && (dest || !submitting)) navigate(dest || from || ROUTES.CATALOG, { replace: true });
+  }, [user, otp, dest, submitting, from, navigate]);
+
+  // Los clientes siempre van a la tienda; solo el rol admin entra al panel.
+  const destinationFor = (profile) => (profile?.role === 'admin' ? ROUTES.ADMIN.DASHBOARD : from || ROUTES.CATALOG);
 
   const onSubmit = async (e) => {
-    e.preventDefault(); 
-    setLoading(true);
-    try { 
-      await login(email, password); 
-      toast.success('Bienvenido a ROGUE GARAGE'); 
-      window.location.href = '/admin'; 
-    }
-    catch (err) { 
+    e.preventDefault();
+    const mail = email.trim();
+    setSubmitting(true);
+    try {
+      if (mode === 'login') {
+        const { user: u } = await login(mail, password);
+        if (ENV.LOGIN_CODE_REQUIRED) {
+          // Contraseña correcta → se exige también el código enviado al correo
+          await authService.logout();
+          await authService.sendLoginCode(mail);
+          setOtp({ email: mail, type: 'email' });
+        } else {
+          const profile = await authService.getProfile(u.id).catch(() => null);
+          toast.success('Bienvenido a Rogue Garage');
+          setDest(destinationFor(profile));
+        }
+      } else {
+        const data = await register(mail, password, fullName.trim());
+        if (data.session) {
+          toast.success('Cuenta creada. ¡Bienvenido!');
+          setDest(from || ROUTES.CATALOG);
+        } else {
+          setOtp({ email: mail, type: 'signup' });
+        }
+      }
+    } catch (err) {
       console.error(err);
-      toast.error('Correo o contraseña incorrectos'); 
-    }
-    finally { 
-      setLoading(false); 
+      toast.error(mode === 'login' ? 'Correo o contraseña incorrectos' : err.message || 'No pudimos crear la cuenta');
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  const verifyCode = async (code) => {
+    const data = await authService.verifyCode(otp.email, code, otp.type);
+    const profile = data.user ? await authService.getProfile(data.user.id).catch(() => null) : null;
+    toast.success(otp.type === 'signup' ? 'Cuenta verificada. ¡Bienvenido!' : 'Bienvenido a Rogue Garage');
+    setDest(otp.type === 'signup' ? from || ROUTES.CATALOG : destinationFor(profile));
+    setOtp(null);
+  };
+
+  const resendCode = () => (otp.type === 'signup' ? authService.resendSignupCode(otp.email) : authService.sendLoginCode(otp.email));
+
+  const isLogin = mode === 'login';
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #0b0d10 0%, #1a1f2e 100%)', padding: '1rem' }}>
-      <div style={{ background: '#14171d', padding: '3rem', borderRadius: '16px', width: '100%', maxWidth: '420px', border: '1px solid #262b34', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)' }}>
-        
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <img src="/images/Logo ROGUE.png" alt="ROGUE GARAGE" style={{ height: '70px', objectFit: 'contain', marginBottom: '1.5rem' }} />
-          <h2 style={{ color: '#fff', margin: 0, fontSize: '1.6rem', fontWeight: 'bold' }}>Acceso Administrativo</h2>
-          <p style={{ color: '#9aa0ab', margin: '0.5rem 0 0 0', fontSize: '0.9rem' }}>Ingresa tus credenciales para gestionar el negocio</p>
-        </div>
+    <StoreLayout floating={false}>
+      <div className="auth-wrap">
+        <div className="auth-card">
+          <h1>{isLogin ? 'Inicia sesión' : 'Crea tu cuenta'}</h1>
+          <p>
+            {from === ROUTES.CART
+              ? 'Necesitas una cuenta para usar tu carrito.'
+              : isLogin
+                ? 'Accede para guardar tu carrito y hacer tus pedidos.'
+                : 'Es gratis y te toma menos de un minuto.'}
+          </p>
 
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <label style={{ color: '#d1d5db', fontSize: '0.85rem', fontWeight: '500', display: 'block', marginBottom: '0.5rem' }}>Correo Electrónico</label>
-            <input 
-              type="email" 
-              placeholder="admin@roguegarage.com" 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              required 
-              style={{ width: '100%', padding: '0.9rem 1rem', background: '#0b0d10', border: '1px solid #333', color: '#fff', borderRadius: '8px', outline: 'none', transition: 'border 0.2s' }} 
-            />
+          <div className="tabs" role="tablist">
+            <button type="button" role="tab" aria-selected={isLogin} className={isLogin ? 'active' : ''} onClick={() => setMode('login')}>Ingresar</button>
+            <button type="button" role="tab" aria-selected={!isLogin} className={!isLogin ? 'active' : ''} onClick={() => setMode('register')}>Crear cuenta</button>
           </div>
 
-          <div>
-            <label style={{ color: '#d1d5db', fontSize: '0.85rem', fontWeight: '500', display: 'block', marginBottom: '0.5rem' }}>Contraseña</label>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type={showPass ? 'text' : 'password'} 
-                placeholder="••••••••" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
-                required 
-                style={{ width: '100%', padding: '0.9rem 1rem', background: '#0b0d10', border: '1px solid #333', color: '#fff', borderRadius: '8px', outline: 'none', paddingRight: '50px' }} 
-              />
-              <button 
-                type="button" 
-                onClick={() => setShowPass(!showPass)} 
-                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#9aa0ab', cursor: 'pointer', fontSize: '0.85rem' }}
-              >
-                {showPass ? 'Ocultar' : 'Ver'}
-              </button>
+          <form className="auth-form" onSubmit={onSubmit}>
+            {!isLogin && (
+              <div className="filter-group">
+                <label htmlFor="a-name">Nombre completo</label>
+                <input id="a-name" className="field" autoComplete="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+              </div>
+            )}
+            <div className="filter-group">
+              <label htmlFor="a-email">Correo electrónico</label>
+              <input id="a-email" className="field" type="email" autoComplete="email" required placeholder="tucorreo@ejemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
-          </div>
+            <div className="filter-group">
+              <label htmlFor="a-pass">Contraseña</label>
+              <div className="pass-wrap">
+                <input id="a-pass" className="field" type={showPass ? 'text' : 'password'} autoComplete={isLogin ? 'current-password' : 'new-password'} required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" onClick={() => setShowPass((s) => !s)}>{showPass ? 'Ocultar' : 'Ver'}</button>
+              </div>
+              {!isLogin && <small style={{ color: 'var(--muted)' }}>Mínimo 6 caracteres.</small>}
+              {isLogin && <Link to={ROUTES.FORGOT} className="forgot-link">¿Olvidaste tu contraseña?</Link>}
+            </div>
 
-          <button 
-            type="submit" 
-            disabled={loading} 
-            style={{ width: '100%', padding: '1rem', background: loading ? '#555' : '#3b82f6', color: '#fff', fontWeight: 'bold', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', marginTop: '0.5rem', fontSize: '1rem', transition: 'background 0.2s, transform 0.1s' }}
-          >
-            {loading ? 'Verificando...' : 'Ingresar al Panel'}
-          </button>
-        </form>
+            {!isLogin && (
+              <label className="check consent">
+                <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} required />
+                <span>Acepto la <Link to={ROUTES.PRIVACY} target="_blank">política de privacidad y tratamiento de datos</Link>.</span>
+              </label>
+            )}
 
-        <div style={{ textAlign: 'center', marginTop: '2rem', borderTop: '1px solid #262b34', paddingTop: '1.5rem' }}>
-          <a href="/" style={{ color: '#9aa0ab', textDecoration: 'none', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            ← Volver a la tienda
-          </a>
+            <button type="submit" className="btn btn-primary btn-block" disabled={submitting || (!isLogin && !accepted)}>
+              {submitting ? 'Un momento...' : isLogin ? 'Ingresar' : 'Crear cuenta'}
+            </button>
+          </form>
+
+          <div className="auth-foot"><Link to={ROUTES.HOME}>Volver a la tienda</Link></div>
         </div>
-
       </div>
-    </div>
+
+      {otp && (
+        <OtpModal
+          email={otp.email}
+          title={otp.type === 'signup' ? 'Confirma tu cuenta' : 'Verificación de acceso'}
+          onVerify={verifyCode}
+          onResend={resendCode}
+          onClose={() => setOtp(null)}
+        />
+      )}
+    </StoreLayout>
   );
 }

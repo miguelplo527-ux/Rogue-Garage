@@ -1,0 +1,203 @@
+.tc {
+  position: relative;
+  height: max(640px, min(100svh, 62vw));
+  overflow: hidden;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tc-title {
+  position: absolute;
+  left: 6%;
+  top: 5%;
+  z-index: 7;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 0.9;
+  color: var(--accent);
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+.tc.is-open .tc-title { color: var(--accent-ink); }
+
+/* ---------- Escritorio: pista horizontal ---------- */
+.tc-track {
+  position: absolute;
+  left: 0;
+  top: 31%;
+  height: 47%;
+  z-index: 2;
+  display: flex;
+  gap: var(--gap, 3vw);
+  cursor: grab;
+  touch-action: pan-y;
+  will-change: transform;
+}
+.tc-track.is-dragging { cursor: grabbing; }
+
+.tc-card {
+  position: relative;
+  flex: 0 0 var(--cw, 22vw);
+  width: var(--cw, 22vw);
+  will-change: transform;
+}
+.tc-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: inherit;
+}
+.tc-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 6px; }
+
+.tc-mask {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--surface);
+}
+.tc-img {
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.tc-name {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+/* ---------- Controles ---------- */
+.tc-controls {
+  position: absolute;
+  left: 6%;
+  bottom: 6%;
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+}
+.tc-nav {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, opacity 0.3s;
+}
+.tc-nav:hover:not([disabled]) { border-color: var(--accent); color: var(--accent); }
+.tc-nav[disabled] { opacity: 0; pointer-events: none; }
+
+/* ---------- Velo de marca y expansión ---------- */
+.tc-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: var(--accent);
+  transform: translate3d(101%, 0, 0);
+  pointer-events: none;
+}
+.tc-overlay {
+  position: absolute;
+  z-index: 5;
+  max-width: none;
+  object-fit: cover;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.tc-detail {
+  position: absolute;
+  left: 7.5%;
+  right: 7.5%;
+  top: 82%;
+  z-index: 6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  color: var(--accent-ink);
+  opacity: 0;
+  pointer-events: none;
+}
+.tc-detail h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.tc-detail p {
+  max-width: 56ch;
+  font-size: 1.05rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+.tc-back {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent-ink);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.tc-back:hover { background: #000; }
+.tc-back:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+
+/* ---------- Celular: colección vertical ---------- */
+.tc.is-mobile { height: max(640px, 100svh); }
+.tc.is-mobile .tc-title { font-size: 3rem; }
+.tc.is-mobile .tc-track {
+  left: 6%;
+  right: 6%;
+  top: 23%;
+  bottom: 9%;
+  height: auto;
+  flex-direction: column;
+  gap: calc(var(--w, 100vw) * 0.15);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  cursor: default;
+  transform: none !important;
+}
+.tc.is-mobile .tc-track::-webkit-scrollbar { display: none; }
+.tc.is-mobile .tc-card { flex: 0 0 auto; width: 100%; scroll-snap-align: start; }
+.tc.is-mobile .tc-mask { aspect-ratio: 4 / 5; }
+.tc.is-mobile .tc-img { left: 0; width: 100%; }
+.tc.is-mobile .tc-controls { left: 0; right: 0; bottom: 1.5%; justify-content: center; }
+.tc.is-mobile .tc-detail { flex-direction: column; gap: 12px; top: 81%; }
+.tc.is-mobile .tc-detail p { font-size: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tc.is-mobile .tc-back { align-self: flex-start; }

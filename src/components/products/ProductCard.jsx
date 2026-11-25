@@ -1,40 +1,57 @@
-﻿import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { formatMoney } from '../../utils/formatters';
-import { ENV } from '../../config/env';
+import { ROUTES } from '../../config/routes';
+import { useAuth } from '../../hooks/useAuth';
+import { useCart } from '../../hooks/useCart';
+import { FALLBACK_IMG } from './ZoomImage';
+import { notifyQuantityLimit } from '../common/QuantityNotice';
 
 export default function ProductCard({ product }) {
-  const waLink = `https://wa.me/${ENV.WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hola ROGUE GARAGE, quiero comprar:\n\n*${product.name}*\nPrecio: ${formatMoney(product.sale_price)}`
-  )}`;
+  const { user } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const category = product.categories?.name || product.category || 'General';
+  const inStock = product.stock > 0;
+
+  const handleAdd = () => {
+    if (!user) {
+      toast('Inicia sesión para agregar productos al carrito', { icon: '🔒' });
+      navigate(ROUTES.LOGIN, { state: { from: location } });
+      return;
+    }
+    const res = addToCart(product, 1);
+    if (!res.ok) {
+      if (res.reason === 'soldout') return toast.error('Este producto está agotado');
+      return notifyQuantityLimit(res.reason, product.name);
+    }
+    if (res.capped) return notifyQuantityLimit(res.reason, product.name);
+    toast.success('Agregado al carrito');
+  };
 
   return (
-    <div className="product-card">
-      <Link to={`/producto/${product.id}`} className="card-img-wrapper">
+    <article className="p-card">
+      <Link to={`/producto/${product.id}`} className="p-media" aria-label={`Ver ${product.name}`}>
         <img
-          src={product.image_url || 'https://via.placeholder.com/300x300?text=Sin+Imagen'}
+          className="p-img"
+          src={product.image_url || FALLBACK_IMG}
           alt={product.name}
-          className="card-img"
+          loading="lazy"
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMG; }}
         />
-        <span className="category-tag">{product.categories?.name || 'General'}</span>
+        <span className={`p-tag${inStock ? '' : ' out'}`}>{inStock ? category : 'Agotado'}</span>
       </Link>
-      
-      <div className="card-body">
-        <h3 className="card-title">{product.name}</h3>
-        <p className="card-desc">{product.description || 'Sin descripción disponible.'}</p>
-        
-        <div className="card-footer">
-          <span className="card-price">{formatMoney(product.sale_price)}</span>
-          <span className={`stock-info ${product.stock > 0 ? '' : 'out'}`}>
-            {product.stock > 0 ? `Stock: ${product.stock}` : 'Agotado'}
-          </span>
-        </div>
-        
-        {product.stock > 0 && (
-          <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-whatsapp" style={{ marginTop: '10px' }}>
-            <i className="fa-brands fa-whatsapp"></i> Comprar
-          </a>
-        )}
+      <span className="p-brand">{product.brand || 'Genérico'}</span>
+      <h3 className="p-title"><Link to={`/producto/${product.id}`}>{product.name}</Link></h3>
+      <p className="p-price">{formatMoney(product.sale_price)}</p>
+      <div className="p-actions">
+        <Link to={`/producto/${product.id}`} className="btn btn-ghost">Ver</Link>
+        <button type="button" className="btn btn-primary" onClick={handleAdd} disabled={!inStock}>
+          <i className="fa-solid fa-cart-plus" /> Agregar
+        </button>
       </div>
-    </div>
+    </article>
   );
 }

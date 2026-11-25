@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 
 export const storageService = {
-  async uploadImage(file) {
+  async uploadImage(file, folder = 'productos') {
     try {
       // 1. Validar que sea una imagen (por si acaso)
       if (!file.type.startsWith('image/')) {
@@ -16,7 +16,7 @@ export const storageService = {
         .toLowerCase();
       
       // 3. Crear un nombre único con la fecha actual
-      const filePath = `productos/${Date.now()}_${fileNameLimpio}.${fileExt}`;
+      const filePath = `${folder}/${Date.now()}_${fileNameLimpio}.${fileExt}`;
 
       // 4. Subir el archivo al bucket
       const { error: uploadError } = await supabase.storage

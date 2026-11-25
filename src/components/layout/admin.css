@@ -3,14 +3,14 @@
    ========================================== */
 
 :root {
-    --bg-dark: #0b0d10;
-    --bg-card: #14171d;
-    --bg-surface: #191d24;
-    --accent: #d99a3d;
-    --accent-hover: #c1842e;
+    --bg-dark: #151a22;
+    --bg-card: #1d2430;
+    --bg-surface: #262e3c;
+    --accent: #c8a874;
+    --accent-hover: #dcbf8c;
     --text-white: #f5f5f2;
-    --text-silver: #9aa0ab;
-    --border-color: #262b34;
+    --text-silver: #aab2c0;
+    --border-color: #4b576b;
     --danger: #e5484d;
     --success: #4caf50;
     --warning: #d69e2e;
@@ -20,7 +20,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Barlow', system-ui, sans-serif;
 }
 
 body {
@@ -36,7 +36,7 @@ body {
 /* SIDEBAR */
 .sidebar {
     width: 250px;
-    background-color: #06070a;
+    background-color: #10141b;
     border-right: 1px solid var(--border-color);
     padding: 25px 18px;
     display: flex;
@@ -412,7 +412,7 @@ body {
     color: var(--text-white) !important;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Barlow', system-ui, sans-serif;
 }
 .swal2-popup.roge-popup .swal2-title,
 .swal2-popup.roge-popup .swal2-html-container { color: var(--text-white) !important; }

@@ -1,5 +1,6 @@
-﻿import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../services/supabaseClient';
+import { authService } from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -34,24 +35,25 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function loadProfile(userId) {
-    // IMPORTANTE: Usamos maybeSingle() para que no explote si el perfil no existe aún
+    // maybeSingle() evita errores si el perfil aún no existe (clientes nuevos)
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .maybeSingle();
 
-    if (error) {
-      console.error('Error cargando el perfil:', error);
-    }
+    if (error) console.error('Error cargando el perfil:', error);
 
     setProfile(data);
     setLoading(false);
   }
 
   async function login(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    return authService.login(email, password); // devuelve { user, session }
+  }
+
+  async function register(email, password, fullName) {
+    return authService.register(email, password, fullName);
   }
 
   async function logout() {
@@ -60,8 +62,14 @@ export function AuthProvider({ children }) {
 
   const isAdmin = profile?.role === 'admin';
 
+  // Nunca mostramos el correo como nombre: si no hay nombre real, usamos "Mi cuenta".
+  const cleanName = (v) => (v && !String(v).includes('@') ? String(v).trim() : '');
+  const realName = cleanName(profile?.full_name) || cleanName(user?.user_metadata?.full_name);
+  const displayName = realName || 'Mi cuenta';
+  const firstName = realName ? realName.split(/\s+/)[0] : '';
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, isAdmin, displayName, firstName }}>
       {children}
     </AuthContext.Provider>
   );

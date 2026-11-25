@@ -1,9 +1,16 @@
-﻿export const ROUTES = {
+export const ROUTES = {
   HOME: '/',
   CATALOG: '/catalogo',
   PRODUCT: '/producto/:id',
+  ABOUT: '/nosotros',
   CONTACT: '/contacto',
   LOGIN: '/login',
+  REGISTER: '/registro',
+  CART: '/carrito',
+  ACCOUNT: '/cuenta',
+  PRIVACY: '/privacidad',
+  FORGOT: '/recuperar',
+  RESET: '/restablecer',
   ADMIN: {
     DASHBOARD: '/admin',
     PRODUCTS: '/admin/productos',
@@ -14,5 +21,6 @@
     SUPPLIERS: '/admin/proveedores',
     EMPLOYEES: '/admin/empleados',
     SETTINGS: '/admin/configuracion',
+    GALLERY: '/admin/galeria',
   },
 };

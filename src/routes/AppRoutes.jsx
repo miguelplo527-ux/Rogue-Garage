@@ -1,4 +1,4 @@
-﻿import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
 
 import HomePage from '../pages/public/HomePage';
@@ -6,6 +6,14 @@ import CatalogPage from '../pages/public/CatalogPage';
 import ProductDetailPage from '../pages/public/ProductDetailPage';
 import ContactPage from '../pages/public/ContactPage';
 import LoginPage from '../pages/auth/LoginPage';
+import RegisterPage from '../pages/auth/RegisterPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
+import AccountPage from '../pages/public/AccountPage';
+import PrivacyPage from '../pages/public/PrivacyPage';
+import GalleryPage from '../pages/admin/GalleryPage';
+import AboutPage from '../pages/public/AboutPage';
+import CartPage from '../pages/public/CartPage';
 
 import Layout from '../components/layout/Layout';
 import DashboardPage from '../pages/admin/DashboardPage';
@@ -29,7 +37,18 @@ export default function AppRoutes() {
       <Route path={ROUTES.CATALOG} element={<CatalogPage />} />
       <Route path="/producto/:id" element={<ProductDetailPage />} />
       <Route path={ROUTES.CONTACT} element={<ContactPage />} />
+      <Route path={ROUTES.ABOUT} element={<AboutPage />} />
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+      <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+      <Route path={ROUTES.FORGOT} element={<ForgotPasswordPage />} />
+      <Route path={ROUTES.RESET} element={<ResetPasswordPage />} />
+      <Route path={ROUTES.PRIVACY} element={<PrivacyPage />} />
+
+      {/* CARRITO: solo con sesión iniciada */}
+      <Route element={<ProtectedRoute />}>
+        <Route path={ROUTES.CART} element={<CartPage />} />
+        <Route path={ROUTES.ACCOUNT} element={<AccountPage />} />
+      </Route>
 
       {/* RUTAS PRIVADAS (ADMIN) */}
       <Route element={<ProtectedRoute />}>
@@ -41,6 +60,7 @@ export default function AppRoutes() {
             <Route path='compras' element={<PurchasesPage />} />
             <Route path="ventas" element={<SalesPage />} />    
             <Route path="finanzas" element={<FinancePage />} />
+            <Route path="galeria" element={<GalleryPage />} />
             <Route path="proveedores" element={<SuppliersPage />} />
             <Route path="empleados" element={<EmployeesPage />} />
             <Route path="configuracion" element={<SettingsPage />} />
