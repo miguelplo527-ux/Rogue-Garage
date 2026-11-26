@@ -9,6 +9,7 @@ import { CATEGORIES, CATEGORY_ICONS } from '../../utils/constants';
 import TidalLens from '../../components/home/TidalLens';
 import TruckCollection from '../../components/home/TruckCollection';
 import { useFrequentModels } from '../../hooks/useFrequentModels';
+import CustomerCarousel from '../../components/home/CustomerCarousel';
 
 export default function HomePage() {
   const navigate = useNavigate();
