@@ -1,0 +1,94 @@
+.tl { position: relative; width: 100%; }
+
+.tl-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-deep);
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.4);
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.tl-stage.is-locked { cursor: default; }
+
+.tl-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.tl-stage[data-ready='1'] .tl-canvas { opacity: 1; }
+
+/* Respaldo sin WebGL */
+.hero-art .tl-img,
+.tl-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+.tl-after {
+  clip-path: circle(var(--lr, 28%) at var(--lx, 50%) var(--ly, 50%));
+}
+
+.tl-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.tl-size {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 200px;
+  min-height: 44px;
+  color: var(--muted);
+  font-size: 1rem;
+}
+.tl-size span { white-space: nowrap; }
+.tl-size input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.tl-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.tl-lock:hover { border-color: var(--accent); color: var(--accent); }
+.tl-lock[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.tl-hint { margin-top: 6px; color: var(--muted); font-size: 0.95rem; }
+
+@media (max-width: 960px) {
+  .tl { max-width: 560px; margin: 0 auto; }
+}
