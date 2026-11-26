@@ -6,12 +6,9 @@ import { ROUTES } from '../../config/routes';
 import { ENV } from '../../config/env';
 import { useProducts } from '../../hooks/useProducts';
 import { CATEGORIES, CATEGORY_ICONS } from '../../utils/constants';
-// antes
-import CustomerCarousel from '../../components/home/CustomerCarousel';
-// después
 import TidalLens from '../../components/home/TidalLens';
+import TruckCollection from '../../components/home/TruckCollection';
 import { useFrequentModels } from '../../hooks/useFrequentModels';
-
 
 export default function HomePage() {
   const navigate = useNavigate();
