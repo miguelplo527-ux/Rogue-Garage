@@ -11,7 +11,6 @@ import CustomerCarousel from '../../components/home/CustomerCarousel';
 // después
 import TidalLens from '../../components/home/TidalLens';
 import { useFrequentModels } from '../../hooks/useFrequentModels';
-import TidalLens from '../../components/home/TidalLens';import TruckCollection from '../../components/home/TruckCollection';
 
 
 export default function HomePage() {
