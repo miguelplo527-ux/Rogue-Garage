@@ -6,12 +6,20 @@ export const authService = {
     if (error) throw error;
     return data;
   },
-  async register(email, password, fullName) {
+  async register(email, password, fullName, extra = {}) {
     // Nunca enviamos el rol: lo asigna la base de datos ('cliente').
+    // El teléfono y la dirección viajan en los metadatos y el trigger los guarda en profiles.
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: {
+          full_name: fullName,
+          phone: extra.phone || '',
+          shipping_address: extra.address || '',
+          shipping_city: extra.city || '',
+        },
+      },
     });
     if (error) throw error;
     return data;
@@ -51,6 +59,13 @@ export const authService = {
   async getSession() {
     const { data } = await supabase.auth.getSession();
     return data.session;
+  },
+  async updateShipping(userId, { phone, address, city }) {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ phone, shipping_address: address, shipping_city: city })
+      .eq('id', userId);
+    if (error) throw error;
   },
   async getProfile(userId) {
     const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();

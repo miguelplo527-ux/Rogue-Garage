@@ -1,19 +1,48 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import StoreLayout from '../../components/layout/StoreLayout';
 import { FALLBACK_IMG } from '../../components/products/ZoomImage';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
+import { paymentsService } from '../../services/paymentsService';
 import { formatMoney } from '../../utils/formatters';
 import { ENV } from '../../config/env';
 import { ROUTES } from '../../config/routes';
 import QuantityNotice from '../../components/common/QuantityNotice';
 
 export default function CartPage() {
-  const { user, displayName, firstName } = useAuth();
+  const navigate = useNavigate();
+  const { user, profile, displayName, firstName } = useAuth();
   const { items, count, subtotal, setQuantity, removeFromCart, clearCart } = useCart();
 
   const [notice, setNotice] = useState(null);
+  const [paying, setPaying] = useState(false);
+  const hasShipping = Boolean(profile?.phone && profile?.shipping_address && profile?.shipping_city);
+
+  const pay = async () => {
+    if (!hasShipping) {
+      toast.error('Completa tu teléfono y dirección de envío para pagar');
+      navigate(ROUTES.ACCOUNT);
+      return;
+    }
+    setPaying(true);
+    try {
+      const { url } = await paymentsService.startCheckout(items);
+      window.location.href = url; // pasarela segura de Wompi
+    } catch (err) {
+      console.error(err);
+      if (err.code === 'missing_shipping') {
+        toast.error('Completa tu teléfono y dirección de envío para pagar');
+        navigate(ROUTES.ACCOUNT);
+      } else if (err.code === 'stock') {
+        toast.error(`No hay suficientes unidades de ${err.details?.product || 'un producto'}. Ajusta la cantidad.`);
+      } else {
+        toast.error('No pudimos iniciar el pago. Inténtalo de nuevo en un momento.');
+      }
+      setPaying(false);
+    }
+  };
   const inc = (i) => {
     const r = setQuantity(i.id, i.quantity + 1);
     if (!r.ok) setNotice({ reason: r.reason, name: i.name });
@@ -74,10 +103,24 @@ export default function CartPage() {
               <h3>Resumen</h3>
               <div className="row"><span>Artículos</span><span>{count}</span></div>
               <div className="row total"><span>Total</span><span>{formatMoney(subtotal)}</span></div>
+              {hasShipping ? (
+                <small>
+                  Enviar a: {profile.shipping_address}, {profile.shipping_city} · {profile.phone}{' '}
+                  <Link to={ROUTES.ACCOUNT} className="inline-link">Cambiar</Link>
+                </small>
+              ) : (
+                <small>
+                  Para pagar necesitamos tu teléfono y dirección de envío.{' '}
+                  <Link to={ROUTES.ACCOUNT} className="inline-link">Completar datos</Link>
+                </small>
+              )}
+              <button type="button" className="btn btn-primary btn-block" onClick={pay} disabled={paying}>
+                <i className="fa-solid fa-lock" aria-hidden="true" /> {paying ? 'Abriendo pago...' : 'Pagar con tarjeta, PSE o Nequi'}
+              </button>
               <a href={waLink} target="_blank" rel="noreferrer" className="btn btn-wa btn-block">
                 <i className="fa-brands fa-whatsapp" /> Enviar pedido por WhatsApp
               </a>
-              <small>Te confirmamos disponibilidad, envío y forma de pago por WhatsApp.</small>
+              <small>Pago seguro con Wompi. También puedes pedir por WhatsApp y te confirmamos disponibilidad y envío.</small>
             </aside>
           </div>
         )}

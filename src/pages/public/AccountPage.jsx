@@ -1,18 +1,49 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import StoreLayout from '../../components/layout/StoreLayout';
 import { useAuth } from '../../hooks/useAuth';
 import { authService } from '../../services/authService';
 import { ROUTES } from '../../config/routes';
+import { isValidPhone, normalizePhone } from '../../utils/validators';
 
 const CONFIRM_WORD = 'ELIMINAR';
 
 export default function AccountPage() {
-  const { user, displayName, isAdmin, logout } = useAuth();
+  const { user, profile, refreshProfile, displayName, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [city, setCity] = useState('');
+  const [address, setAddress] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setPhone(profile?.phone || '');
+    setCity(profile?.shipping_city || '');
+    setAddress(profile?.shipping_address || '');
+  }, [profile]);
+
+  const saveShipping = async (e) => {
+    e.preventDefault();
+    if (!isValidPhone(phone)) return toast.error('Escribe un teléfono válido (por ejemplo 3001234567)');
+    setSaving(true);
+    try {
+      await authService.updateShipping(user.id, {
+        phone: normalizePhone(phone),
+        city: city.trim(),
+        address: address.trim(),
+      });
+      await refreshProfile();
+      toast.success('Datos de envío guardados');
+    } catch (err) {
+      console.error(err);
+      toast.error('No pudimos guardar tus datos. Inténtalo de nuevo.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const deleteAccount = async (e) => {
     e.preventDefault();
@@ -49,6 +80,26 @@ export default function AccountPage() {
             <p className="panel-note">
               Tratamos tus datos según nuestra <Link to={ROUTES.PRIVACY}>política de privacidad</Link>.
             </p>
+          </section>
+
+          <section className="panel">
+            <h2>Datos de envío</h2>
+            <p>Usamos estos datos para entregarte tus pedidos y contactarte.</p>
+            <form className="auth-form" onSubmit={saveShipping}>
+              <div className="filter-group">
+                <label htmlFor="acc-phone">Teléfono / WhatsApp</label>
+                <input id="acc-phone" className="field" type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="acc-city">Ciudad</label>
+                <input id="acc-city" className="field" autoComplete="address-level2" required value={city} onChange={(e) => setCity(e.target.value)} />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="acc-address">Dirección</label>
+                <input id="acc-address" className="field" autoComplete="street-address" required value={address} onChange={(e) => setAddress(e.target.value)} />
+              </div>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Guardando...' : 'Guardar datos de envío'}</button>
+            </form>
           </section>
 
           <section className="panel danger-zone">

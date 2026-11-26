@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { authService } from '../../services/authService';
 import { ROUTES } from '../../config/routes';
 import { ENV } from '../../config/env';
+import { isValidPhone, normalizePhone } from '../../utils/validators';
 
 export default function LoginPage({ initialMode = 'login' }) {
   const { user, login, register } = useAuth();
@@ -19,6 +20,9 @@ export default function LoginPage({ initialMode = 'login' }) {
   const [mode, setMode] = useState(initialMode);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [city, setCity] = useState('');
+  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -41,18 +45,27 @@ export default function LoginPage({ initialMode = 'login' }) {
     try {
       if (mode === 'login') {
         const { user: u } = await login(mail, password);
-        if (ENV.LOGIN_CODE_REQUIRED) {
-          // Contraseña correcta → se exige también el código enviado al correo
+        const profile = await authService.getProfile(u.id).catch(() => null);
+        // Los administradores entran solo con su contraseña (sus correos internos no reciben códigos).
+        if (ENV.LOGIN_CODE_REQUIRED && profile?.role !== 'admin') {
+          // Cliente con contraseña correcta → se exige también el código enviado al correo
           await authService.logout();
           await authService.sendLoginCode(mail);
           setOtp({ email: mail, type: 'email' });
         } else {
-          const profile = await authService.getProfile(u.id).catch(() => null);
           toast.success('Bienvenido a Rogue Garage');
           setDest(destinationFor(profile));
         }
       } else {
-        const data = await register(mail, password, fullName.trim());
+        if (!isValidPhone(phone)) {
+          toast.error('Escribe un teléfono válido (por ejemplo 3001234567)');
+          return;
+        }
+        const data = await register(mail, password, fullName.trim(), {
+          phone: normalizePhone(phone),
+          city: city.trim(),
+          address: address.trim(),
+        });
         if (data.session) {
           toast.success('Cuenta creada. ¡Bienvenido!');
           setDest(from || ROUTES.CATALOG);
@@ -109,6 +122,22 @@ export default function LoginPage({ initialMode = 'login' }) {
               <label htmlFor="a-email">Correo electrónico</label>
               <input id="a-email" className="field" type="email" autoComplete="email" required placeholder="tucorreo@ejemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
+            {!isLogin && (
+              <>
+                <div className="filter-group">
+                  <label htmlFor="a-phone">Teléfono / WhatsApp</label>
+                  <input id="a-phone" className="field" type="tel" inputMode="tel" autoComplete="tel" required placeholder="3001234567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                </div>
+                <div className="filter-group">
+                  <label htmlFor="a-city">Ciudad de envío</label>
+                  <input id="a-city" className="field" autoComplete="address-level2" required placeholder="Bogotá" value={city} onChange={(e) => setCity(e.target.value)} />
+                </div>
+                <div className="filter-group">
+                  <label htmlFor="a-address">Dirección de envío</label>
+                  <input id="a-address" className="field" autoComplete="street-address" required placeholder="Calle 123 # 45-67, apto 301, barrio" value={address} onChange={(e) => setAddress(e.target.value)} />
+                </div>
+              </>
+            )}
             <div className="filter-group">
               <label htmlFor="a-pass">Contraseña</label>
               <div className="pass-wrap">

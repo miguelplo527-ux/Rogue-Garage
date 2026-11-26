@@ -14,6 +14,7 @@ import PrivacyPage from '../pages/public/PrivacyPage';
 import GalleryPage from '../pages/admin/GalleryPage';
 import AboutPage from '../pages/public/AboutPage';
 import CartPage from '../pages/public/CartPage';
+import OrderPage from '../pages/public/OrderPage';
 
 import Layout from '../components/layout/Layout';
 import DashboardPage from '../pages/admin/DashboardPage';
@@ -47,6 +48,7 @@ export default function AppRoutes() {
       {/* CARRITO: solo con sesión iniciada */}
       <Route element={<ProtectedRoute />}>
         <Route path={ROUTES.CART} element={<CartPage />} />
+        <Route path={ROUTES.ORDER} element={<OrderPage />} />
         <Route path={ROUTES.ACCOUNT} element={<AccountPage />} />
       </Route>
 
@@ -58,7 +60,7 @@ export default function AppRoutes() {
             <Route path="productos" element={<ProductsPage />} />
             <Route path='inventario' element={<InventoryPage />} />
             <Route path='compras' element={<PurchasesPage />} />
-            <Route path="ventas" element={<SalesPage />} />    
+            <Route path="ventas" element={<SalesPage />} />
             <Route path="finanzas" element={<FinancePage />} />
             <Route path="galeria" element={<GalleryPage />} />
             <Route path="proveedores" element={<SuppliersPage />} />

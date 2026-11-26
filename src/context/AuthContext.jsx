@@ -52,8 +52,12 @@ export function AuthProvider({ children }) {
     return authService.login(email, password); // devuelve { user, session }
   }
 
-  async function register(email, password, fullName) {
-    return authService.register(email, password, fullName);
+  async function register(email, password, fullName, extra) {
+    return authService.register(email, password, fullName, extra);
+  }
+
+  async function refreshProfile() {
+    if (user) await loadProfile(user.id);
   }
 
   async function logout() {
@@ -69,7 +73,7 @@ export function AuthProvider({ children }) {
   const firstName = realName ? realName.split(/\s+/)[0] : '';
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, isAdmin, displayName, firstName }}>
+    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, refreshProfile, isAdmin, displayName, firstName }}>
       {children}
     </AuthContext.Provider>
   );

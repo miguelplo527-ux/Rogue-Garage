@@ -6,10 +6,9 @@ import { ROUTES } from '../../config/routes';
 import { ENV } from '../../config/env';
 import { useProducts } from '../../hooks/useProducts';
 import { CATEGORIES, CATEGORY_ICONS } from '../../utils/constants';
+import { useFrequentModels } from '../../hooks/useFrequentModels';
 import TidalLens from '../../components/home/TidalLens';
 import TruckCollection from '../../components/home/TruckCollection';
-import { useFrequentModels } from '../../hooks/useFrequentModels';
-import CustomerCarousel from '../../components/home/CustomerCarousel';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -64,7 +63,6 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero-art">
-            <CustomerCarousel />
             <TidalLens />
           </div>
         </div>
